@@ -54,8 +54,13 @@ def chat(messages: list[dict], *, temperature: float = 0.2,
                                  headers=headers, method="POST")
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         data = json.loads(resp.read().decode("utf-8"))
-    content = data["choices"][0]["message"]["content"]
-    # qwen3 等思考模型会把 <think>…</think> 混在 content 里，剥掉
+    message = data["choices"][0]["message"]
+    content = (message.get("content") or "").strip()
+    # 思考型模型（step-3.7-flash 等）content/reasoning 分字段；思考吃满
+    # max_tokens 时 content 可能为空——此时退化取思考尾部，宁可有信息不空转
+    if not content:
+        content = (message.get("reasoning_content")
+                   or message.get("reasoning") or "").strip()
     if "</think>" in content:
         content = content.split("</think>", 1)[1]
     return content.strip()

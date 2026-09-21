@@ -18,7 +18,7 @@ def main() -> int:
     print("== 1. 对话 sanity ==")
     print(chat([{"role": "user",
                  "content": "用一句话回答：你是谁？运行在什么硬件上？"}],
-               max_tokens=100))
+               max_tokens=600))
 
     print("== 2. 路由三连（两正一负）==")
     ready = [s for s in load_skills() if s.entry]
