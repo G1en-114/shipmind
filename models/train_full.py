@@ -57,37 +57,53 @@ def train_one(machine_root: Path, epochs: int, batch: int, workers: int,
     print(f"[{machine_root.name}] train {len(files)} | test normal {n_test_n} anom {n_test_a}",
           flush=True)
 
-    # 1) 特征（先小样本估计标准化参数，再全量提）
-    t0 = time.time()
-    sample = collect_parallel(files[:64], None, workers)
-    stats = {"mean": float(sample.mean()), "std": float(sample.std()) + 1e-6}
-    x = collect_parallel(files, stats, workers)
-    print(f"[{machine_root.name}] 特征完成 {x.shape} 用时 {time.time()-t0:.0f}s", flush=True)
-
-    # 2) 训练（支持续训）
+    # 断点三件套：模型权重 ckpt / 训练进度 meta / 特征缓存 feat
+    # （特征提取是最耗时的一步，必须缓存，否则每次 resume 都要重跑十几分钟）
+    meta = ckpt.with_suffix(".meta.npz")
+    feat_cache = ckpt.with_name(ckpt.stem + "_feat.npy")
     ae = AutoEncoder()
-    start_ep = 0
-    if resume and ckpt.exists():
-        d = np.load(ckpt)
+    start_ep, stats = 0, None
+
+    if resume and ckpt.exists() and meta.exists():
+        d, m = np.load(ckpt), np.load(meta)
         ae.W = [d[f"W{i}"] for i in range(len(ae.W))]
         ae.b = [d[f"b{i}"] for i in range(len(ae.b))]
-        start_ep = int(d["epoch"]) + 1
-        print(f"[{machine_root.name}] 从 epoch {start_ep} 续训", flush=True)
-    rng = np.random.default_rng(0)
-    steps = max(len(x) // batch, 1)
-    for ep in range(start_ep, epochs):
-        order = rng.permutation(len(x))
-        tot = 0.0
-        for s in range(steps):
-            idx = order[s * batch:(s + 1) * batch]
-            if len(idx) < 8:
-                continue
-            tot += ae.train_step(x[idx])
-        if ep % log_every == 0 or ep == epochs - 1:
-            print(f"[{machine_root.name}] epoch {ep:3d} loss {tot/steps:.5f}", flush=True)
-        ckpt.parent.mkdir(parents=True, exist_ok=True)
-        ae.save(ckpt)
-        np.savez(ckpt.with_suffix(".meta.npz"), epoch=ep, **stats)
+        start_ep = int(m["epoch"]) + 1
+        stats = {"mean": float(m["mean"]), "std": float(m["std"])}
+        print(f"[{machine_root.name}] 续训：从 epoch {start_ep} 开始", flush=True)
+
+    if resume and feat_cache.exists():
+        x = np.load(feat_cache)
+        print(f"[{machine_root.name}] 特征缓存命中 {x.shape}", flush=True)
+    else:
+        t0 = time.time()
+        sample = collect_parallel(files[:64], None, workers)
+        stats = {"mean": float(sample.mean()), "std": float(sample.std()) + 1e-6}
+        x = collect_parallel(files, stats, workers)
+        feat_cache.parent.mkdir(parents=True, exist_ok=True)
+        np.save(feat_cache, x)
+        print(f"[{machine_root.name}] 特征完成 {x.shape} 用时 {time.time()-t0:.0f}s（已缓存）",
+              flush=True)
+
+    if start_ep >= epochs:
+        print(f"[{machine_root.name}] 已完成 {start_ep} epoch，跳过训练", flush=True)
+    else:
+        rng = np.random.default_rng(0)
+        steps = max(len(x) // batch, 1)
+        for ep in range(start_ep, epochs):
+            order = rng.permutation(len(x))
+            tot = 0.0
+            for s in range(steps):
+                idx = order[s * batch:(s + 1) * batch]
+                if len(idx) < 8:
+                    continue
+                tot += ae.train_step(x[idx])
+            if ep % log_every == 0 or ep == epochs - 1:
+                print(f"[{machine_root.name}] epoch {ep:3d} loss {tot/steps:.5f}", flush=True)
+            # 每个 epoch 末都存：权重 + 进度 + 标准化参数，中断后可精确续训
+            ckpt.parent.mkdir(parents=True, exist_ok=True)
+            ae.save(ckpt)
+            np.savez(meta, epoch=ep, **stats)
 
     # 3) 全量评测
     x_n = collect_parallel(sorted(test_dir.glob("normal_id_*.wav")), stats, workers)
