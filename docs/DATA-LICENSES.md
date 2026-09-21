@@ -8,7 +8,9 @@
 |---|---|---|---|
 | **DCASE 2020 Task2 开发集**（MIMII + ToyADMOS） | 机舱声学 ML 轨主数据 | **CC BY-NC-SA 4.0** | Zenodo 3678171；pump 1.03GB ✅ / valve 1.0GB ⏳ / fan 1.4GB ⏳（本地代理下载中，完成后传节点） |
 | **DeepShip（GitHub 部分，4 类）** | 声纹正数据 | 仓库无 LICENSE（注明出处） | 525MB tarball ✅ 已解压 `D:\datasets\deepship`（Cargo/Passengership/Tanker/Tug，699MB 解压后）；完整版需邮件 mirfan@mail.nwpu.edu.cn |
-| **SeaShipsSeg**（1200 张标注船舶图，6 船型） | 视觉/态势补充 | 仓库无 LICENSE（注明出处） | 222MB tarball ✅ 已解压 `D:\datasets\seashipsseg`（images/ + annotations/train,val） |
+| **SeaShipsSeg**（1200 张标注船舶图，6 船型） | 视觉/态势补充 | 仓库无 LICENSE（注明出处） | 222MB ✅ 已解压 `D:\datasets\seashipsseg`；已传节点 |
+| **MODD2 校正版视频**（28 序列 / 11675 左目帧，1278×958，真实 USV 拍摄） | DeepStream/VSS 真实视频源、驾驶台视觉 | 公开下载（box.vicos.si，仓库无 LICENSE） | 1.72GB ✅ 已解压 `D:\datasets\modd2\video`；标注 `annotationsV2_rectified/<seq>/ground_truth/*.mat`（sea_edge 7 点折线 + obstacles 框）正传节点 |
+| **MaSTr1325**（1325 张海面图 + 逐像素掩膜，512×384） | 海面/障碍语义分割 | 公开下载（box.vicos.si，仓库无 LICENSE） | 24MB ✅ 已解压并传节点 `~/data/mastr1325` |
 
 ## B. 曾误判为“免申请”，核实后需授权（❌ 不用）
 
