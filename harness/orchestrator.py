@@ -40,6 +40,21 @@ class Orchestrator:
     def route(self, query: str):
         return route(query, list(self.skills.values()))
 
+    def route_smart(self, query: str) -> tuple[str | None, str]:
+        """大脑优先路由，关键词路由兜底。返回 (skill名或None, 路由方式)。"""
+        from .brain import choose_skill
+        try:
+            ready = [s for s in self.skills.values() if s.entry]
+            name = choose_skill(query, ready)
+            if name is None:
+                return None, "brain"
+            if name in self.skills and self.skills[name].entry:
+                return name, "brain"
+        except Exception:
+            pass  # 大脑不可达时静默降级，值守系统不能因路由器失联而停摆
+        hit = self.route(query)
+        return (hit.name, "keyword") if hit else (None, "keyword")
+
     def execute_step(self, skill_name: str, args: list[str]) -> dict:
         skill = self.skills.get(skill_name)
         if skill is None or skill.entry is None or skill.dir is None:
