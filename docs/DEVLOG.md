@@ -16,3 +16,16 @@
 **今天最有价值的发现**：查政策时挖到一条法条，把整个项目的必要性从"省钱省带宽"提升到了"合规硬约束"。《海上交通安全法》第二十四条要求船舶在我国管辖海域通信必须通过依法设置的境内海岸电台或卫星关口站转接——机舱音视频、AIS、航线数据在船内闭环处理，就是合规风险最低的架构，而不是"因为贵所以不上云"。另外确认了《智能船舶发展行动计划（2019—2021年）》是工信部、交通运输部、国防科工局三部委联合印发，中国船级社《智能船舶规范》2026 版今年 6 月 1 日刚生效，政策顺风是实的。
 
 明天的第一个目标：让主 Agent 在 DGX Spark 上跑通第一个 Skill。
+
+## Day 1 · 2026-09-21 · 上真机
+
+比预期快：主 Agent 还没上，但整个骨架已经先上了真机。组委会分配的 Spark 云节点（GB10，ARM64，统一内存 121Gi，20 核，盘 2.6T）昨晚到位，今天把自检、代码同步、官方 Skill 安装全部走通：
+
+- 骨架推上节点后，**13/13 评测在 DGX Spark 真机上全绿**——5 个自研 Skill（声学哨兵/航线偏离/雷达 PPI/声纹/日志）在 ARM64 上原生可跑，无一依赖编译。
+- 官方目录踩了真坑：节点直连 GitHub 全程不通，git clone 重试四次失败。最后走的路线是"本地代理下载 tarball → SFTP 上传 → 解压"，顺便把官方目录 pin 在 commit `fd9f1466`（2026-09-18）——训练营讲义反复强调"固定上游提交、保留签名"，第一天就照做了：`nv-agent-root-cert.pem` 和每个 Skill 的 `skill.oms.sig`/`skill-card.md`/`BENCHMARK.md` 全套治理产物完整落地。
+- 装了 6 个官方 Skill（rag-blueprint、tao grounding、tao referring-expressions、vss video-report、vss ask-video、deepstream pipeline）。有个意外收获：`tao-generate-referring-expressions` 在目录里，意味着训练营里"两个官方 Skill 串成一个自研 Skill"的拿分范式我们可以完整复刻。
+- 踩了两个小坑记录在案：系统 Node 18 跑不动 skills CLI（`node:util` 缺 `styleText`，需 ≥20），在用户目录装了 Node 22 不碰系统；skills CLI 的 `--list` 是交互式 TUI，非终端下会卡住，改用本地路径安装。
+- GitHub 仓库开张：github.com/G1en-114/shipmind，Apache-2.0。从今天起每日 push——节点无备份，git 远端就是我们的灾备。
+
+明天（D3）目标：vLLM 起来（节点无 nvcc，走容器方案），然后让编排大脑说第一句话。
+
