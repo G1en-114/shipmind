@@ -25,45 +25,71 @@
 
 ## 系统架构
 
+```mermaid
+flowchart TB
+    subgraph SHIP["船端 · DGX Spark · 离线闭环 · 运行时零云端"]
+        direction TB
+        U["船员（语音 / 触屏）"]
+        ASR["StepAudio 本地 ASR / TTS"]
+        OC["OpenClaw 本地会话宿主<br/>官方 Skill pin 上游提交后整目录入 workspace"]
+        BRAIN["主 Agent 编排与路由<br/>Step 3.7 Flash（NIM 本地）"]
+
+        subgraph SL["Skill 层"]
+            direction TB
+            subgraph ER["机舱哨兵线"]
+                direction LR
+                S1["声学哨兵 ✅"]
+                S2["视觉巡检 🔜"]
+                S3["手册RAG 🔜"]
+                S4["值班日志 ✅"]
+                S5["巡检报告 🔜"]
+            end
+            subgraph SA["态势感知线"]
+                direction LR
+                S6["声纹 ✅"]
+                S7["雷达PPI ✅"]
+                S8["航线偏离 ✅"]
+            end
+        end
+
+        V["证据审核 Agent（verifier）🔜<br/>逐条核对 结论 ↔ 证据，无证据即驳回"]
+
+        subgraph H["自研 Harness ✅"]
+            direction LR
+            H1["Skill 运行时"]
+            H2["路由"]
+            H3["契约校验"]
+            H4["轨迹回放"]
+            H5["算力调度"]
+        end
+
+        W["值班台 Web 🔜<br/>告警流 · 频谱 · 航线走廊 · 雷达态势 · 轨迹回放"]
+
+        subgraph SEN["传感器接入层（模拟源映射真实设备）"]
+            direction LR
+            E1["音频：MIMII / DeepShip / 自录"]
+            E2["视频：MODD2 真实 + 合成表盘"]
+            E3["导航：NMEA 0183 模拟器"]
+            E4["雷达：PPI 合成器"]
+        end
+
+        INF["推理：vLLM 0.25（GB10 本地）<br/>知识：RAG Blueprint 本地向量库"]
+    end
+
+    CLOUD["☁️ 开发期专用 · 组委会 Spark 云节点<br/>数据镜像 · 耗时训练 · 模型制品分发"]
+    GH["📦 GitHub 仓库 —— 每日 push，节点无备份时代的灾备"]
+
+    U --> ASR --> OC --> BRAIN --> SL --> V --> W
+    H -. 承载 .-> SL
+    SEN --> SL
+    INF --> BRAIN
+    CLOUD -. 仅开发期同步 .-> SHIP
+    SHIP --> GH
 ```
-┌─ 船端 · DGX Spark · 离线闭环 · 运行时永不联网 ─────────────────────┐
-│                                                                    │
-│  船员（语音 / 触屏） ←→ StepAudio 本地 ASR / TTS                    │
-│         ↕                                                           │
-│  OpenClaw（本地会话与工具调用宿主；官方 Skill pin 提交整目录入 workspace）│
-│         ↕                                                           │
-│  主 Agent 编排路由 —— Step 3.7 Flash（NVIDIA NIM 本地，多模态大脑）   │
-│      机舱哨兵 Skill 集              态势感知 Skill 集                 │
-│      ├ engine-room-acoustic-       ├ sonar-acoustic-fingerprint    │
-│      │  sentinel                   ├ radar-ppi-interpreter         │
-│      ├ engine-room-visual-         └ route-deviation-watch         │
-│      │  inspector                                                   │
-│      ├ manual-rag-query（手册/COLREGs/SMS）                          │
-│      ├ navlog-autofill              ┌ 跨线融合：雷达目标 × 声纹类型   │
-│      └ report-composer              │ × 航线态势 → 态势报告；        │
-│                                     └ 目标类型 → COLREGs 会遇咨询    │
-│         ↕                                                           │
-│  证据审核 Agent（verifier）：逐条核对结论↔证据（特征数值/视觉框/      │
-│  手册引用/谱线/雷达检测参数），无证据即驳回——多智能体协同的实证       │
-│         ↕                                                           │
-│  自研 Harness：Skill 运行时 · 渐进式披露 · 路由 · 输出契约校验        │
-│               · 执行轨迹录制回放 · 本地算力预算调度                   │
-│         ↕                                                           │
-│  值班台 Web：告警流 · 频谱波形 · 带框截图 · 日志报告 · 航线走廊与     │
-│  雷达态势图 · 轨迹回放                                               │
-│         ↕                                                           │
-│  传感器接入层（模拟源，映射真实船上设备）                             │
-│   ├ 音频：机舱录音 + 水听器录音（MIMII / ShipsEar / DeepShip / 自录）│
-│   ├ 视频：机舱/仪表录像 → DeepStream + TAO                          │
-│   ├ 导航：NMEA 0183 模拟器（船位/航向/航速，RMC/GGA 句）             │
-│   └ 雷达：PPI 合成器（目标/杂波/噪声渲染）                           │
-│                                                                      │
-│  推理：vLLM 0.28 / NIM        知识：RAG Blueprint 本地向量库         │
-└────────────────────────────────────────────────────────────────────┘
-```
+
+完整架构图（含跨线融合数据流、数据资产流向、评测体系）见 [docs/architecture.md](docs/architecture.md)。
 
 开发期使用组委会分配的 DGX Spark 云节点（连接信息见组委会私密登录表，不入仓库）；**运行时零云端依赖，演示全程不触网**。
-
 ## Skill 清单
 
 ### 官方 Skill（保持原样，pin 上游提交，保留 skill-card 与签名）
