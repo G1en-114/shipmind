@@ -43,4 +43,21 @@
 
 **数据侧**：DCASE 2020 三机种（pump/valve/fan）本地下载完成，DeepShip 四类 + SeaShipsSeg 1200 张标注图已就位并传节点。两个数据集曾被我误判为"免申请"——UFPR-ADMR-v1 要机构签协议、Mileeena 合成表盘是 HF 门控（401）——所以表盘数据改为自产合成（PIL 渲染，读数+bbox 精确标签，零许可风险），与雷达 PPI 合成器同一套方法论。
 
+**又拿到 MODD2 真实海事视频**（队友手动下载，28 序列 11675 帧真实 USV 拍摄 + 水岸线/障碍标注）。更正一个此前的误判：MODD2 官方下载链接其实一直可用（支持断点续传），我之前探测方式有问题。
+
+## Day 2 晚 · 2026-09-21 · 节点故障与恢复：本地推理端点打通
+
+下午出了个事故：vLLM 容器把节点搞死了。GB10 是统一内存架构，`gpu-memory-utilization` 默认 0.9 意味着吃掉全机 121GB 内存的 90%——给一个 4B 小模型也这么干，节点进程调度被饿死，SSH 认证成功但会话建不起来。三小时后 OOM killer 自己把容器杀了才恢复。
+
+恢复后用修正参数重启，两个根因一起解决：
+
+1. **flashinfer 版本不匹配**（镜像里 jit-cache 0.6.11 vs 包 0.6.13）——`FLASHINFER_DISABLE_VERSION_CHECK=1` 绕过，错误信息自带解法；
+2. **统一内存必须限容**——`--gpu-memory-utilization 0.45`，4B 模型只分约 50GB，留 58GB 给系统；`--enforce-eager` 跳过 CUDA graph 捕获。
+
+结果：`Application startup complete` 终于出现，**本地推理端点正式打通**。然后用同一套路由用例做了双端点回归对照——本地 Qwen3-4B 与 StepFun API **6/6 全部一致**（含"晚饭吃什么"→ NONE 的负例）。这就是"换模型只改 base_url/model_name/api_key 三个值 + 回归评测证明行为等价"的完整实证，平台适配性那一项有实证素材了。
+
+教训写进了 `docs/NODE-INCIDENT.md`：小模型在统一内存机器上也必须显式限容。
+
+**另一个有价值的负面结果**：AE 在 valve/fan 上 AUC 只有 0.48/0.54（等于随机），只有 pump 的 0.797 有效。于是做了同数据同口径的双轨正面对比——启发式 z-score 轨在三个机种上全面胜出（pump 0.856 / valve 0.988 / fan 0.666）。这不是"AE 不行"，而是"我们从零重写的简化 AE（无 BatchNorm、SGD、10 epoch）打不过一小组方向无关的信号特征"， valve 上 0.988 vs 0.483 尤其悬殊。双轨架构的价值由此被真实数据验证：启发式是主力，ML 是对照和迭代方向。全部写进了 `evals/BENCHMARK.md`，含口径、局限和下一步。
+
 
