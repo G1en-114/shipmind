@@ -6,5 +6,9 @@ data/
 runs/
 .smoke/
 evals/fixtures/
-models/
+# 模型权重与训练产物（代码在 models/*.py，需要提交）
+models/*.npz
+models/*.safetensors
+models/ckpt/
+models/ae_ckpt.npz
 *.log

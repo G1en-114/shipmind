@@ -40,11 +40,12 @@ def acoustic() -> None:
 
     for i in range(3):
         save_wav(FIX / "acoustic/baseline" / f"n{i}.wav", realization())
-    save_wav(FIX / "acoustic/pump_normal_01.wav", realization())
+    # 评分目录约定：normal/ + anom/（DCASE 风格），训练用 baseline/
+    save_wav(FIX / "acoustic/normal/pump_normal_01.wav", realization())
     worn = (0.3 * np.sin(2 * np.pi * 80 * t)
             + 0.25 * np.sin(2 * np.pi * 4000 * t)
             + 0.05 * rng.standard_normal(len(t)))
-    save_wav(FIX / "acoustic/pump_bearing_worn_01.wav", worn)
+    save_wav(FIX / "acoustic/anom/pump_bearing_worn_01.wav", worn)
     save_wav(FIX / "acoustic/pump_short_2s.wav", realization()[: sr * 2])
 
 
