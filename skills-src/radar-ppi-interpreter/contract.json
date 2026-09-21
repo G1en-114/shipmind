@@ -1,0 +1,4 @@
+{
+  "required": ["targets", "n_targets"],
+  "types": {"targets": "array", "n_targets": "number"}
+}

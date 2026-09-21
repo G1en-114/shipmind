@@ -1,0 +1,2 @@
+{"id": "navlog-001", "type": "positive", "events": "evals/fixtures/navlog/events.jsonl", "expect_n_events": 3, "note": "3 条事件必须全部进入日志并正确统计"}
+{"id": "navlog-002", "type": "negative", "events": "evals/fixtures/nmea/garbage.nmea", "expect": "rejected", "note": "非事件 JSONL 必须整体拒绝，禁止输出半份日志"}

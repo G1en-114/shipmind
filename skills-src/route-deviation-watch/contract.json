@@ -1,0 +1,9 @@
+{
+  "required": ["level", "max_xte_m", "corridor_half_width_m", "n_fixes"],
+  "types": {
+    "level": "string",
+    "max_xte_m": "number",
+    "corridor_half_width_m": "number",
+    "n_fixes": "number"
+  }
+}

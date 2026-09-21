@@ -1,0 +1,4 @@
+{"id": "route-001", "type": "positive", "nmea": "evals/fixtures/nmea/on_track.nmea", "route": "evals/fixtures/nmea/route.json", "expect_level": "normal", "note": "沿走廊中线，必须 normal（零容差）"}
+{"id": "route-002", "type": "positive", "nmea": "evals/fixtures/nmea/watch_drift.nmea", "route": "evals/fixtures/nmea/route.json", "expect_level": "watch", "note": "横向漂移 800m，落在走廊 1852m 的 0.5~1 倍区间"}
+{"id": "route-003", "type": "positive", "nmea": "evals/fixtures/nmea/alarm_drift.nmea", "route": "evals/fixtures/nmea/route.json", "expect_level": "alarm", "note": "横向漂移 2000m，超出走廊"}
+{"id": "route-004", "type": "negative", "nmea": "evals/fixtures/nmea/garbage.nmea", "route": "evals/fixtures/nmea/route.json", "expect": "rejected", "note": "无有效定位必须拒绝，不得输出模糊结论"}

@@ -1,0 +1,84 @@
+{
+  "passed": 13,
+  "total": 13,
+  "results": [
+    {
+      "skill": "engine-room-acoustic-sentinel",
+      "id": "acoustic-001",
+      "pass": true,
+      "note": "level=critical"
+    },
+    {
+      "skill": "engine-room-acoustic-sentinel",
+      "id": "acoustic-002",
+      "pass": true,
+      "note": "level=normal"
+    },
+    {
+      "skill": "engine-room-acoustic-sentinel",
+      "id": "acoustic-003",
+      "pass": true,
+      "note": "rc=2"
+    },
+    {
+      "skill": "route-deviation-watch",
+      "id": "route-001",
+      "pass": true,
+      "note": "level=normal"
+    },
+    {
+      "skill": "route-deviation-watch",
+      "id": "route-002",
+      "pass": true,
+      "note": "level=watch"
+    },
+    {
+      "skill": "route-deviation-watch",
+      "id": "route-003",
+      "pass": true,
+      "note": "level=alarm"
+    },
+    {
+      "skill": "route-deviation-watch",
+      "id": "route-004",
+      "pass": true,
+      "note": "rc=2"
+    },
+    {
+      "skill": "radar-ppi-interpreter",
+      "id": "radar-001",
+      "pass": true,
+      "note": "n_targets=2"
+    },
+    {
+      "skill": "radar-ppi-interpreter",
+      "id": "radar-002",
+      "pass": true,
+      "note": "n_targets=0"
+    },
+    {
+      "skill": "sonar-acoustic-fingerprint",
+      "id": "sonar-001",
+      "pass": true,
+      "note": "label=large_cargo_or_tanker"
+    },
+    {
+      "skill": "sonar-acoustic-fingerprint",
+      "id": "sonar-002",
+      "pass": true,
+      "note": "label=unknown"
+    },
+    {
+      "skill": "navlog-autofill",
+      "id": "navlog-001",
+      "pass": true,
+      "note": "n_events=3"
+    },
+    {
+      "skill": "navlog-autofill",
+      "id": "navlog-002",
+      "pass": true,
+      "note": "rc=2"
+    }
+  ]
+}

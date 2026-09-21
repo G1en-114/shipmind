@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.zcode/
+data/
+runs/
+.smoke/
+evals/fixtures/
+models/
+*.log

@@ -1,0 +1,4 @@
+{
+  "required": ["log_text", "n_events", "by_type"],
+  "types": {"log_text": "string", "n_events": "number", "by_type": "object"}
+}

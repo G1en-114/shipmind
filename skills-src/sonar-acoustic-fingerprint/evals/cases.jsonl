@@ -1,0 +1,2 @@
+{"id": "sonar-001", "type": "positive", "audio": "evals/fixtures/sonar/cargo_like.wav", "expect_label_contains": "cargo", "note": "14Hz 基频 + 5 阶谐波列 → 大型货船/油轮类"}
+{"id": "sonar-002", "type": "negative", "audio": "evals/fixtures/sonar/noise_only.wav", "expect_label": "unknown", "note": "纯噪声必须 unknown（confidence≤0.2），禁止硬判船型"}

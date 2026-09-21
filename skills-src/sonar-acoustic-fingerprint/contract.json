@@ -1,0 +1,9 @@
+{
+  "required": ["label", "confidence", "mode", "evidence"],
+  "types": {
+    "label": "string",
+    "confidence": "number",
+    "mode": "string",
+    "evidence": "object"
+  }
+}

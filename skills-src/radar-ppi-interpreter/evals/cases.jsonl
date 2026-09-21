@@ -1,0 +1,2 @@
+{"id": "radar-001", "type": "positive", "fixture": "evals/fixtures/radar/two_targets.npy", "expect_min_targets": 2, "note": "两个目标必须都被检出，方位/距离见真值文件"}
+{"id": "radar-002", "type": "negative", "fixture": "evals/fixtures/radar/empty.npy", "expect_zero_targets": true, "note": "空海面不允许虚警（负向用例零容忍）"}
