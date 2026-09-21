@@ -18,7 +18,13 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-import numpy as np
+# 必须在 import numpy 之前设置：多进程 + 多线程 BLAS 会线程超额订阅
+# （N worker × 每 worker 20 BLAS 线程 = 大量线程抢少量核心，load 可飙到 200+）
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+           "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+    os.environ.setdefault(_v, "2")
+
+import numpy as np  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from train_ae import (AutoEncoder, FRAMES, HOP, N_FFT, auc, collect,  # noqa: E402
@@ -105,7 +111,9 @@ def main() -> int:
     ap.add_argument("--machines", default="pump,valve,fan")
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--batch", type=int, default=512)
-    ap.add_argument("--workers", type=int, default=min(32, (os.cpu_count() or 8)))
+    ap.add_argument("--workers", type=int,
+                    default=min(8, (os.cpu_count() or 8)),
+                    help="特征提取进程数；BLAS 线程已在脚本内限为 2，避免线程超额订阅")
     ap.add_argument("--resume", action="store_true")
     args = ap.parse_args()
 
