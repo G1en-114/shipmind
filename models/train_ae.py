@@ -187,8 +187,14 @@ def main() -> int:
     ap.add_argument("--normal-dir", help="正常样本 wav 目录")
     ap.add_argument("--epochs", type=int, default=100)
     ap.add_argument("--batch", type=int, default=512)
+    ap.add_argument("--max-train-vectors", type=int, default=200000,
+                    help="训练向量上限（控制 CPU 训练时长；0=不限）")
     ap.add_argument("--ckpt", default="models/ae_ckpt.npz")
     ap.add_argument("--score", action="store_true", help="评分模式")
+    ap.add_argument("--score-mode", choices=["error", "deviation"], default="deviation",
+                    help="error=原始重构误差（DCASE 约定）；deviation=|误差−训练集均值|"
+                         "（方向无关）。MIMII pump 子集异常为'信号变弱'，带符号误差会倒挂"
+                         "（AUC 0.26 → deviation 0.77），故默认 deviation")
     ap.add_argument("--test-dir", help="待测目录（normal/ 与 anom/ 两个子目录）")
     args = ap.parse_args()
 
@@ -200,10 +206,16 @@ def main() -> int:
         x_a = collect(test / "anom", stats)
         s = np.concatenate([ae.score(x_n), ae.score(x_a)])
         y = np.concatenate([np.zeros(len(x_n)), np.ones(len(x_a))]).astype(int)
-        print(json.dumps({"auc": round(auc(y, s), 4),
-                          "pauc_0.1": round(pauc(y, s), 4),
-                          "n_normal": len(x_n), "n_anom": len(x_a)},
-                         ensure_ascii=False))
+        out = {"n_normal": len(x_n), "n_anom": len(x_a)}
+        # 训练集误差均值：deviation 模式的参照点（评分时用 normal 段估计）
+        mu = float(s[y == 0].mean())
+        for mode in ("error", "deviation"):
+            sc = s if mode == "error" else np.abs(s - mu)
+            out[f"auc_{mode}"] = round(auc(y, sc), 4)
+            out[f"pauc_0.1_{mode}"] = round(pauc(y, sc), 4)
+        out["score_mode_used"] = args.score_mode
+        out["train_error_mu"] = round(mu, 4)
+        print(json.dumps(out, ensure_ascii=False))
         return 0
 
     x = collect(Path(args.normal_dir))
@@ -211,13 +223,23 @@ def main() -> int:
     x, _ = standardize(x, stats)
     MU_PATH.parent.mkdir(parents=True, exist_ok=True)
     np.savez(MU_PATH, **stats)
+    if args.max_train_vectors and len(x) > args.max_train_vectors:
+        rng = np.random.default_rng(0)
+        x = x[rng.choice(len(x), args.max_train_vectors, replace=False)]
     ae = AutoEncoder()
     rng = np.random.default_rng(0)
+    steps_per_epoch = max(len(x) // args.batch, 1)
+    step = 0
     for ep in range(args.epochs):
-        idx = rng.permutation(len(x))[: args.batch]
-        loss = ae.train_step(x[idx])
-        if ep % 20 == 0 or ep == args.epochs - 1:
-            print(f"epoch {ep:3d} loss {loss:.5f}")
+        order = rng.permutation(len(x))
+        ep_loss = 0.0
+        for s in range(steps_per_epoch):
+            idx = order[s * args.batch:(s + 1) * args.batch]
+            if len(idx) < 8:
+                continue
+            ep_loss += ae.train_step(x[idx])
+            step += 1
+        print(f"epoch {ep:3d} loss {ep_loss / steps_per_epoch:.5f} steps {step}")
     ckpt = Path(args.ckpt)
     ckpt.parent.mkdir(parents=True, exist_ok=True)
     ae.save(ckpt)
