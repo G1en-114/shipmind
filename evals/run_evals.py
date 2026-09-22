@@ -34,6 +34,14 @@ SKILLS = [
      "entry": "skills-src/navlog-autofill/scripts/navlog.py",
      "cases": "skills-src/navlog-autofill/evals/cases.jsonl",
      "checker": "navlog"},
+    {"name": "manual-rag-query",
+     "entry": "skills-src/manual-rag-query/scripts/rag_query.py",
+     "cases": "skills-src/manual-rag-query/evals/cases.jsonl",
+     "checker": "rag"},
+    {"name": "engine-room-visual-inspector",
+     "entry": "skills-src/engine-room-visual-inspector/scripts/visual_inspect.py",
+     "cases": "skills-src/engine-room-visual-inspector/evals/cases.jsonl",
+     "checker": "visual"},
 ]
 
 
@@ -61,6 +69,12 @@ def build_args(checker: str, case: dict) -> list[str]:
         return [case["audio"], "--mode", "rule"]
     if checker == "navlog":
         return [case["events"]]
+    if checker == "rag":
+        return ["--query", case["query"], "--top-k", "3", "--json"]
+    if checker == "visual":
+        if case.get("mode") == "aggregate":
+            return ["--eval-dir", case["eval_dir"]]
+        return [case["fixture"]]
     raise ValueError(checker)
 
 
@@ -92,6 +106,28 @@ def check(case: dict, rc: int, out: dict | None) -> tuple[bool, str]:
         return out.get("label") == case["expect_label"], f"label={out.get('label')}"
     if "expect_n_events" in case:
         return out.get("n_events") == case["expect_n_events"], f"n_events={out.get('n_events')}"
+    if case.get("expect") == "no_hit":
+        answers = out.get("answers", [])
+        ok = answers == [] and bool(out.get("note"))
+        return ok, f"answers={len(answers)} note={'有' if out.get('note') else '无'}"
+    if "expect_source_contains" in case:
+        answers = out.get("answers", [])
+        if not answers:
+            return False, "无命中"
+        # 检索质量按 recall@3 衡量：期望来源出现在前三即算命中
+        # （同一问题常有多个相关章节，如泵手册故障表与 SMS 响应程序都相关）
+        top3 = answers[:3]
+        src_ok = any(case["expect_source_contains"] in a.get("source", "") for a in top3)
+        sec_ok = any(case.get("expect_section_contains", "") in a.get("section", "")
+                     for a in top3)
+        quote_ok = all(len(a.get("quote", "")) >= 5 for a in answers)
+        ok = src_ok and sec_ok and quote_ok
+        return ok, f"top3={[a.get('source') + ':' + a.get('section', '')[:12] for a in top3]}"
+    if "expect_frac_mae_max" in case:
+        mae = out.get("frac_mae", 1.0)
+        n = out.get("n", 0)
+        ok = mae <= case["expect_frac_mae_max"] and n >= case.get("expect_n_min", 1)
+        return ok, f"n={n} frac_mae={mae} rejected={out.get('n_rejected')}"
     return True, "no expectation"
 
 

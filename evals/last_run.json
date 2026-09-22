@@ -1,6 +1,6 @@
 {
-  "passed": 13,
-  "total": 13,
+  "passed": 19,
+  "total": 19,
   "results": [
     {
       "skill": "engine-room-acoustic-sentinel",
@@ -77,6 +77,42 @@
     {
       "skill": "navlog-autofill",
       "id": "navlog-002",
+      "pass": true,
+      "note": "rc=2"
+    },
+    {
+      "skill": "manual-rag-query",
+      "id": "rag-001",
+      "pass": true,
+      "note": "top3=['sms-emergency.md:3. 轴承异响告警的标准', 'centrifugal-pump.md:3.1 高频啸叫伴金属摩', 'centrifugal-pump.md:3.4 尖锐哨音（汽蚀早']"
+    },
+    {
+      "skill": "manual-rag-query",
+      "id": "rag-002",
+      "pass": true,
+      "note": "top3=['colregs-essentials.md:2.7 第 15 条 —', 'colregs-essentials.md:3. 态势分类与让路关系', 'colregs-essentials.md:2.5 第 13 条 —']"
+    },
+    {
+      "skill": "manual-rag-query",
+      "id": "rag-003",
+      "pass": true,
+      "note": "top3=['sms-emergency.md:1. 机舱进水应急', 'sms-emergency.md:（导言）', 'sms-emergency.md:6. 记录要求']"
+    },
+    {
+      "skill": "manual-rag-query",
+      "id": "rag-004",
+      "pass": true,
+      "note": "answers=0 note=有"
+    },
+    {
+      "skill": "engine-room-visual-inspector",
+      "id": "visual-001",
+      "pass": true,
+      "note": "n=72 frac_mae=0.0558 rejected=4"
+    },
+    {
+      "skill": "engine-room-visual-inspector",
+      "id": "visual-002",
       "pass": true,
       "note": "rc=2"
     }

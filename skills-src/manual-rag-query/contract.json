@@ -1,0 +1,4 @@
+{
+  "required": ["query", "answers"],
+  "types": {"query": "string", "answers": "array"}
+}

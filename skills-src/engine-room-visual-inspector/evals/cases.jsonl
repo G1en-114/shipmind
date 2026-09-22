@@ -1,0 +1,2 @@
+{"id": "visual-001", "type": "positive", "mode": "aggregate", "eval_dir": "evals/fixtures/gauges", "expect_frac_mae_max": 0.08, "expect_n_min": 50, "note": "130 张合成表盘上归一化读数 MAE < 0.08（量程无关口径）；拒判是正确行为"}
+{"id": "visual-002", "type": "negative", "mode": "no_dial", "fixture": "evals/fixtures/nmea/garbage.nmea", "expect": "rejected", "note": "非图像输入必须拒绝，不得输出任何读数"}

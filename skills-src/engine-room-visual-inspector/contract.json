@@ -1,0 +1,4 @@
+{
+  "required": ["readings"],
+  "types": {"readings": "array"}
+}

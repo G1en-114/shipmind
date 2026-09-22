@@ -106,11 +106,11 @@ flowchart TB
 | `sonar-acoustic-fingerprint` | 被动声纹（民用海事感知）：LOFAR 谱线 + DEMON 轴频 → 船类规则判别；ML 轨接 DeepShip 分类器 | ✅ 规则轨 |
 | `navlog-autofill` | 事件流 → 标准轮机日志（确定性） | ✅ 可运行 |
 | `trajectory-recorder` | Harness 内：执行轨迹录制/回放/diff | ✅ 可运行 |
-| `engine-room-visual-inspector` | 仪表读数与设备状态（调 TAO + 微调小 VLM） | 🔜 D4 |
-| `manual-rag-query` | 手册/COLREGs 检索，逐条带原文引用（调 rag-blueprint） | 🔜 D5 |
+| `engine-room-visual-inspector` | 表盘定位 + 指针读数（CV 轨：红/黑指针两路检测 + 显著性拒判；TAO grounding 为升级轨） | ✅ 可运行 |
+| `manual-rag-query` | 手册/COLREGs/SMS 检索，逐条带原文引用（本地 BM25 轨；rag-blueprint 为升级轨） | ✅ 可运行 |
 | `report-composer` | 多源证据巡检报告（调 vss-generate-video-report，经 verifier 复核） | 🔜 D6 |
 
-手册语料为**自拟合成手册**（无版权风险，README 据实标注）。
+手册语料为**自拟合成手册**（`corpus/manuals/`：离心泵运维手册 / COLREGs 要点 / SMS 应急摘要），无版权风险；检索与读数均为"本地可复现轨 + 官方 Skill 升级轨"的分层实现，接口一致可替换。
 
 ## 模型与调优
 
