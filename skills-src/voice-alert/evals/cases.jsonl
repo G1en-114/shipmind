@@ -1,0 +1,1 @@
+{"id": "voice-001", "type": "positive", "tts": "3号泵 alarm，切换备用泵", "expect_ok": true, "note": "TTS 必须合成出非空音频（StepFun step-tts-2）"}

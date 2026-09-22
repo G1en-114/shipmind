@@ -42,6 +42,14 @@ SKILLS = [
      "entry": "skills-src/engine-room-visual-inspector/scripts/visual_inspect.py",
      "cases": "skills-src/engine-room-visual-inspector/evals/cases.jsonl",
      "checker": "visual"},
+    {"name": "report-composer",
+     "entry": "skills-src/report-composer/scripts/compose_report.py",
+     "cases": "skills-src/report-composer/evals/cases.jsonl",
+     "checker": "report"},
+    {"name": "voice-alert",
+     "entry": "skills-src/voice-alert/scripts/voice.py",
+     "cases": "skills-src/voice-alert/evals/cases.jsonl",
+     "checker": "voice"},
 ]
 
 
@@ -75,6 +83,10 @@ def build_args(checker: str, case: dict) -> list[str]:
         if case.get("mode") == "aggregate":
             return ["--eval-dir", case["eval_dir"]]
         return [case["fixture"]]
+    if checker == "report":
+        return [case["input"]]
+    if checker == "voice":
+        return ["--tts", case["tts"], "--out", "evals/fixtures/voice/alert.wav"]
     raise ValueError(checker)
 
 
@@ -128,6 +140,18 @@ def check(case: dict, rc: int, out: dict | None) -> tuple[bool, str]:
         n = out.get("n", 0)
         ok = mae <= case["expect_frac_mae_max"] and n >= case.get("expect_n_min", 1)
         return ok, f"n={n} frac_mae={mae} rejected={out.get('n_rejected')}"
+    if case.get("checker") == "report" or "expect" in case and case.get("expect") in ("pass", "reject"):
+        if out is None:
+            return False, "无输出"
+        v = out.get("verifier", {})
+        if case.get("expect") == "pass":
+            ok = v.get("ok") is True and "[已核实]" in out.get("report_md", "")
+            return ok, f"verdict={v.get('verdict')}"
+        ok = v.get("n_rejected", 0) >= 1 and "[待复核]" in out.get("report_md", "")
+        return ok, f"verdict={v.get('verdict')} 报告含待复核={'[待复核]' in out.get('report_md','')}"
+    if "expect_ok" in case:
+        ok = out.get("ok") is True and (out.get("bytes") or 0) > 1000
+        return ok, f"bytes={out.get('bytes')} file={out.get('file', '')[-30:]}"
     return True, "no expectation"
 
 

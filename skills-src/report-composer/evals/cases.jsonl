@@ -1,0 +1,2 @@
+{"id": "report-001", "type": "positive", "input": "evals/fixtures/report/rounds_good.json", "expect": "pass", "note": "两条结论都有证据 → verifier 通过、报告含[已核实]条目"}
+{"id": "report-002", "type": "negative", "input": "evals/fixtures/report/rounds_bad.json", "expect": "reject", "note": "一条结论无证据引用 → 必须被驳回并标注[待复核]，禁止静默删除"}

@@ -1,6 +1,6 @@
 {
-  "passed": 19,
-  "total": 19,
+  "passed": 22,
+  "total": 22,
   "results": [
     {
       "skill": "engine-room-acoustic-sentinel",
@@ -115,6 +115,24 @@
       "id": "visual-002",
       "pass": true,
       "note": "rc=2"
+    },
+    {
+      "skill": "report-composer",
+      "id": "report-001",
+      "pass": true,
+      "note": "verdict=通过"
+    },
+    {
+      "skill": "report-composer",
+      "id": "report-002",
+      "pass": true,
+      "note": "verdict=驳回 1 条 报告含待复核=True"
+    },
+    {
+      "skill": "voice-alert",
+      "id": "voice-001",
+      "pass": true,
+      "note": "bytes=45612 file=evals\\fixtures\\voice\\alert.wav"
     }
   ]
 }
