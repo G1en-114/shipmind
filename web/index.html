@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>ShipMind 值班台</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --border:#30363d; --txt:#c9d1d9;
+          --dim:#8b949e; --ok:#3fb950; --warn:#d29922; --alarm:#db6d28; --crit:#f85149; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--txt); font:14px/1.5 -apple-system,"Segoe UI",sans-serif; }
+  header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex;
+           align-items:baseline; gap:14px; }
+  header h1 { font-size:18px; }
+  header .sub { color:var(--dim); font-size:12px; }
+  header .status { margin-left:auto; color:var(--ok); font-size:12px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:16px; }
+  .panel { background:var(--panel); border:1px solid var(--border); border-radius:8px;
+           padding:12px; min-height:180px; }
+  .panel.wide { grid-column:span 2; }
+  .panel h2 { font-size:13px; color:var(--dim); text-transform:uppercase;
+              letter-spacing:.5px; margin-bottom:10px; }
+  .lv { display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px;
+        font-weight:600; }
+  .lv-normal{background:rgba(63,185,80,.15);color:var(--ok)}
+  .lv-watch{background:rgba(210,153,34,.15);color:var(--warn)}
+  .lv-alarm{background:rgba(219,109,40,.15);color:var(--alarm)}
+  .lv-critical{background:rgba(248,81,73,.15);color:var(--crit)}
+  .alert { padding:8px; border-left:3px solid var(--border); margin-bottom:8px;
+           background:rgba(255,255,255,.02); border-radius:0 4px 4px 0; }
+  .alert.critical{border-color:var(--crit)} .alert.alarm{border-color:var(--alarm)}
+  .alert.watch{border-color:var(--warn)} .alert.normal{border-color:var(--ok)}
+  .alert .meta { color:var(--dim); font-size:12px; margin-top:2px; }
+  canvas { width:100%; height:120px; background:#0a0d12; border-radius:4px; }
+  #situationCanvas { height:260px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  td,th { padding:4px 6px; text-align:left; border-bottom:1px solid var(--border); }
+  th { color:var(--dim); font-weight:500; }
+  pre { white-space:pre-wrap; font-size:11px; color:var(--dim); max-height:200px;
+        overflow:auto; }
+  .tag { background:rgba(255,255,255,.06); padding:1px 6px; border-radius:4px;
+         font-size:11px; margin-right:4px; }
+  img { max-width:100%; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>⚓ ShipMind 值班台</h1>
+  <span class="sub">船舶离线值守多智能体副驾 · DGX Spark · 运行时零云端</span>
+  <span class="status" id="status">● 加载中</span>
+</header>
+
+<div class="grid">
+  <section class="panel wide">
+    <h2>实时告警流</h2>
+    <div id="alerts"><p class="sub">加载中…</p></div>
+  </section>
+
+  <section class="panel">
+    <h2>声学频谱</h2>
+    <canvas id="specCanvas"></canvas>
+    <div id="specFeats" style="margin-top:8px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>视觉巡检</h2>
+    <div id="visual"><p class="sub">加载中…</p></div>
+  </section>
+
+  <section class="panel wide">
+    <h2>态势：航线走廊 + 雷达目标</h2>
+    <canvas id="situationCanvas"></canvas>
+    <div id="situationInfo" style="margin-top:8px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>执行轨迹</h2>
+    <div id="trajectory"><p class="sub">加载中…</p></div>
+  </section>
+
+  <section class="panel wide">
+    <h2>日志与报告</h2>
+    <div id="logs"><p class="sub">加载中…</p></div>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LEVEL_CN = {normal:'正常', watch:'关注', alarm:'告警', critical:'危急'};
+
+async function loadAll() {
+  // 告警
+  try {
+    const a = await (await fetch('/api/alerts')).json();
+    $('alerts').innerHTML = a.alerts.map(x => `
+      <div class="alert ${x.level}">
+        <span class="lv lv-${x.level}">${LEVEL_CN[x.level] || x.level}</span>
+        <b>${x.device}</b>
+        <div class="meta">${x.top_feature || ''} 偏离 ${x.delta ?? '-'}
+          ${x.causes.length ? '<br>可能成因：' + x.causes.join('、') : ''}</div>
+      </div>`).join('') || '<p class="sub">无告警</p>';
+  } catch (e) { $('alerts').innerHTML = '<p class="sub">加载失败</p>'; }
+
+  // 频谱
+  try {
+    const s = await (await fetch('/api/spectrum')).json();
+    const c = $('specCanvas'), ctx = c.getContext('2d');
+    c.width = c.clientWidth; c.height = 120;
+    const d = s.spectrum, n = d.length;
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.strokeStyle = '#58a6ff'; ctx.beginPath();
+    d.forEach((v,i) => {
+      const x = i/(n-1)*c.width, y = c.height - (v+100)/100*c.height;
+      i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+    });
+    ctx.stroke();
+    $('specFeats').innerHTML = Object.entries(s.features).slice(0,4).map(([k,v]) =>
+      `<span class="tag">${k} ${typeof v === 'number' ? v.toFixed(3) : v}</span>`).join('');
+  } catch (e) {}
+
+  // 视觉
+  try {
+    const v = await (await fetch('/api/visual')).json();
+    $('visual').innerHTML = v.image_b64
+      ? `<img src="data:image/jpeg;base64,${v.image_b64}">
+         <div style="margin-top:6px"><span class="tag">读数 ${v.reading.value ?? 'unreadable'}</span>
+         <span class="tag">置信度 ${v.reading.confidence ?? '-'}</span>
+         <span class="tag">${v.reading.method ?? ''}</span></div>`
+      : '<p class="sub">无图像</p>';
+  } catch (e) {}
+
+  // 态势
+  try {
+    const s = await (await fetch('/api/situation')).json();
+    drawSituation(s);
+    const t = (s.radar.targets || []);
+    $('situationInfo').innerHTML =
+      `<span class="tag">雷达目标 ${t.length}</span>` +
+      t.map(x => `<span class="tag">${x.bearing_deg}° / ${x.range_m}m</span>`).join('') +
+      `<span class="tag">航线 ${s.route.level}</span>` +
+      `<span class="tag">声纹 ${s.sonar.label}</span>`;
+  } catch (e) {}
+
+  // 轨迹
+  try {
+    const t = await (await fetch('/api/trajectory')).json();
+    $('trajectory').innerHTML = t.latest
+      ? `<p class="sub">${t.latest.path} · ${t.latest.steps} 步</p>
+         <table>${t.latest.detail.map(s => `<tr><td>${s.skill}</td>
+         <td>${(s.duration_s*1000).toFixed(0)}ms</td>
+         <td>rc=${s.returncode}</td></tr>`).join('')}</table>`
+      : `<p class="sub">${t.note || '无轨迹'}</p>`;
+  } catch (e) {}
+
+  // 报告
+  try {
+    const l = await (await fetch('/api/logs')).json();
+    $('logs').innerHTML = l.report_md
+      ? `<pre>${l.report_md.slice(0, 1200)}</pre>`
+      : `<p class="sub">${l.note || '无报告'}</p>`;
+  } catch (e) {}
+
+  $('status').textContent = '● 已刷新 ' + new Date().toLocaleTimeString();
+}
+
+function drawSituation(s) {
+  const c = $('situationCanvas'), ctx = c.getContext('2d');
+  c.width = c.clientWidth; c.height = 260;
+  const cx = c.width/2, cy = c.height - 20, R = 230;
+  ctx.clearRect(0,0,c.width,c.height);
+  // 距离环
+  ctx.strokeStyle = '#21262d';
+  for (let i = 1; i <= 4; i++) {
+    ctx.beginPath(); ctx.arc(cx, cy, R*i/4, Math.PI, 0); ctx.stroke();
+  }
+  // 本船
+  ctx.fillStyle = '#3fb950';
+  ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 7); ctx.fill();
+  // 雷达目标（极坐标：方位 0=船首向上）
+  (s.radar.targets || []).forEach(t => {
+    const a = (t.bearing_deg - 90) * Math.PI/180;
+    const r = Math.min(t.range_m/8000, 1) * R;
+    ctx.fillStyle = '#f85149';
+    ctx.beginPath(); ctx.arc(cx + r*Math.cos(a), cy + r*Math.sin(a), 6, 0, 7); ctx.fill();
+    ctx.fillStyle = '#8b949e'; ctx.font = '11px sans-serif';
+    ctx.fillText(`${t.bearing_deg}° ${t.range_m}m`, cx + r*Math.cos(a) + 9, cy + r*Math.sin(a) + 4);
+  });
+  ctx.fillStyle = '#8b949e'; ctx.font = '11px sans-serif';
+  ctx.fillText('船首 ↑', cx - 14, cy - R - 6);
+}
+
+loadAll();
+setInterval(loadAll, 10000);
+</script>
+</body>
+</html>
