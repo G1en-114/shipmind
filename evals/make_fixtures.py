@@ -82,6 +82,23 @@ def radar() -> None:
     (p / "empty.json").write_text("[]", encoding="utf-8")
 
 
+def report() -> None:
+    p = FIX / "report"
+    p.mkdir(parents=True, exist_ok=True)
+    (p / "rounds_good.json").write_text(json.dumps({
+        "title": "机舱巡检报告（测试）", "rounds": [
+            {"step_id": "acoustic-001", "skill": "engine-room-acoustic-sentinel",
+             "output": {"level": "alarm", "evidence": [
+                 {"feature": "band_ratio_high", "label": "高频段能量占比", "delta": 0.38}]}},
+            {"step_id": "visual-001", "skill": "engine-room-visual-inspector",
+             "output": {"readings": [{"value": 5.05, "unit": "bar", "method": "red_needle"}]}}
+        ]}, ensure_ascii=False), encoding="utf-8")
+    (p / "rounds_bad.json").write_text(json.dumps({
+        "title": "机舱巡检报告（测试）", "rounds": [
+            {"step_id": "acoustic-001", "skill": "engine-room-acoustic-sentinel",
+             "output": {"level": "alarm", "evidence": []}}
+        ]}, ensure_ascii=False), encoding="utf-8")
+
 def navlog() -> None:
     p = FIX / "navlog/events.jsonl"
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -123,6 +140,7 @@ if __name__ == "__main__":
     sonar()
     routes()
     radar()
+    report()
     navlog()
     nmea_tracks()
     radar_fields()
