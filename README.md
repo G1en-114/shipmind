@@ -39,8 +39,8 @@ flowchart TB
             subgraph ER["机舱哨兵线"]
                 direction LR
                 S1["声学哨兵 ✅"]
-                S2["视觉巡检 🔜"]
-                S3["手册RAG 🔜"]
+                S2["视觉巡检 ✅"]
+                S3["手册RAG ✅"]
                 S4["值班日志 ✅"]
                 S5["巡检报告 🔜"]
             end
