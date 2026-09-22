@@ -1,6 +1,6 @@
 {
-  "passed": 24,
-  "total": 24,
+  "passed": 25,
+  "total": 25,
   "results": [
     {
       "skill": "engine-room-acoustic-sentinel",
@@ -102,7 +102,7 @@
       "skill": "manual-rag-query",
       "id": "rag-003",
       "pass": true,
-      "note": "top3=['sms-emergency.md:1. 机舱进水应急', 'sms-emergency.md:（导言）', 'sms-emergency.md:6. 记录要求']"
+      "note": "top3=['sms-emergency.md:1. 机舱进水应急', 'sms-emergency.md:（导言）', 'sms-emergency.md:4. 火灾应急（机舱）']"
     },
     {
       "skill": "manual-rag-query",
@@ -141,10 +141,16 @@
       "note": "verdict=驳回 1 条 报告含待复核=True"
     },
     {
+      "skill": "report-composer",
+      "id": "fusion-001",
+      "pass": true,
+      "note": "claims=5 verdict=通过"
+    },
+    {
       "skill": "voice-alert",
       "id": "voice-001",
       "pass": true,
-      "note": "bytes=43308 file=evals\\fixtures\\voice\\alert.wav"
+      "note": "bytes=45612 file=evals\\fixtures\\voice\\alert.wav"
     }
   ]
 }

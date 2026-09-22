@@ -59,9 +59,15 @@ def chunk_markdown(path: Path) -> list[dict]:
 
 
 class BM25:
+    TITLE_BOOST = 2.0  # 章节标题命中权重：按"第15条"检索应命中条款小节本身，
+                       # 而非正文里提到"第 15 条"的其他条款（Rule 13 就提到了 15/17）
+
     def __init__(self, docs: list[dict]):
         self.docs = docs
-        self.tf = [Counter(tokenize(d["text"] + " " + d["section"])) for d in docs]
+        self.tf_text = [Counter(tokenize(d["text"])) for d in docs]
+        self.tf_title = [Counter(tokenize(d["section"])) for d in docs]
+        self.tf = [t + Counter({k: v * int(self.TITLE_BOOST) for k, v in ti.items()})
+                   for t, ti in zip(self.tf_text, self.tf_title)]
         self.df = Counter()
         for t in self.tf:
             for tok in t:

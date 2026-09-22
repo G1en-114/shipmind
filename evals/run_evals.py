@@ -86,6 +86,8 @@ def build_args(checker: str, case: dict) -> list[str]:
             return ["--eval-dir", case["eval_dir"]]
         return [case["fixture"]]
     if checker == "report":
+        if case.get("mode") == "fusion":
+            return ["--no-voice"]
         return [case["input"]]
     if checker == "voice":
         return ["--tts", case["tts"], "--out", "evals/fixtures/voice/alert.wav"]
@@ -96,6 +98,12 @@ def check(case: dict, rc: int, out: dict | None,
           out_raw: str = "") -> tuple[bool, str]:
     if case.get("expect") == "rejected":
         return rc == 2, f"rc={rc}"
+    if case.get("mode") == "fusion":
+        ok = (rc == 0 and out is not None
+              and out.get("verifier", {}).get("ok") is True
+              and len(out.get("claims", [])) >= 4
+              and "交叉相遇" in (out.get("claims") or [{}])[-1].get("claim", ""))
+        return ok, f"claims={len((out or {}).get('claims', []))} verdict={(out or {}).get('verifier', {}).get('verdict')}"
     # 纯文本自检（如 classify_encounter --selftest）不要求 JSON 输出
     if case.get("expect_pass") is not None:
         ok = case["expect_pass"] == ("5/5 passed" in (out_raw or "")
