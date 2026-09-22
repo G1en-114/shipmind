@@ -1,0 +1,4 @@
+{
+  "required": ["ok"],
+  "types": {"ok": "boolean"}
+}

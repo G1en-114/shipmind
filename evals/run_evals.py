@@ -46,6 +46,14 @@ SKILLS = [
      "entry": "skills-src/report-composer/scripts/compose_report.py",
      "cases": "skills-src/report-composer/evals/cases.jsonl",
      "checker": "report"},
+    {"name": "official-bridge",
+     "entry": "scripts/official_bridge.py",
+     "cases": "skills-src/official-bridge/evals/cases.jsonl",
+     "checker": "official"},
+    {"name": "agent-routing",
+     "entry": "scripts/agent_demo.py",
+     "cases": "skills-src/official-bridge/evals/agent_cases.jsonl",
+     "checker": "agent"},
     {"name": "voice-alert",
      "entry": "skills-src/voice-alert/scripts/voice.py",
      "cases": "skills-src/voice-alert/evals/cases.jsonl",
@@ -91,6 +99,10 @@ def build_args(checker: str, case: dict) -> list[str]:
         return [case["input"]]
     if checker == "voice":
         return ["--tts", case["tts"], "--out", "evals/fixtures/voice/alert.wav"]
+    if checker == "official":
+        return ["--skill", case["skill"], "--query", case["query"]]
+    if checker == "agent":
+        return [case["query"]]
     raise ValueError(checker)
 
 
@@ -98,6 +110,21 @@ def check(case: dict, rc: int, out: dict | None,
           out_raw: str = "") -> tuple[bool, str]:
     if case.get("expect") == "rejected":
         return rc == 2, f"rc={rc}"
+    if "expect_route" in case:
+        ok = out is not None and out.get("route") == case["expect_route"]
+        if case.get("expect_origin"):
+            steps = (out or {}).get("steps") or []
+            ok = ok and any(s.get("origin") == case["expect_origin"] for s in steps)
+        return ok, f"route={out.get('route') if out else None} 期望={case['expect_route']}"
+    if case.get("checker") == "official" or "expect_executed" in case:
+        if case.get("expect_executed"):
+            pipes = out.get("pipelines") or []
+            ok = (out.get("ok") is True and out.get("executed") is True
+                  and any(case["expect_pipeline_contains"] in p for p in pipes))
+            return ok, f"executed={out.get('executed')} pipelines={len(pipes)}"
+        ok = (out.get("ok") is True and out.get("executed") is False
+              and bool(out.get("prerequisites")))
+        return ok, f"mode={out.get('mode')} prereqs={len(out.get('prerequisites', []))}"
     if case.get("mode") == "fusion":
         ok = (rc == 0 and out is not None
               and out.get("verifier", {}).get("ok") is True

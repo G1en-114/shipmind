@@ -1,0 +1,3 @@
+{"id": "official-001", "type": "positive", "skill": "deepstream-generate-pipeline", "query": "process a recorded mp4 with primary inference", "expect_executed": true, "expect_pipeline_contains": "gst-launch-1.0", "note": "executable 官方 Skill 必须真跑并返回含 gst-launch-1.0 的 pipeline"}
+{"id": "official-002", "type": "positive", "skill": "rag-blueprint", "query": "如何部署 RAG", "expect_executed": false, "expect_prereqs": true, "note": "advisory Skill 必须如实返回 executed=false + 前置条件，禁止假装执行"}
+{"id": "official-003", "type": "negative", "skill": "not-a-skill", "query": "x", "expect": "rejected", "note": "未知 Skill 必须拒绝"}

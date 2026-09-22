@@ -1,0 +1,57 @@
+{
+  "_comment": "官方 NVIDIA Skill 接入清单。executable=有可执行入口（已实测）；advisory=指令型 Skill，由 Agent 展开其 SKILL.md（渐进式披露）。prerequisites 为实测前置条件。",
+  "source_repo": "https://github.com/NVIDIA/skills",
+  "pinned_commit": "fd9f1466ff8a39178e488981e8b5118709392949",
+  "installed_path": "~/.agents/skills",
+  "skills": [
+    {
+      "name": "deepstream-generate-pipeline",
+      "description": "DeepStream 管线生成：BM25 检索验证过的 pipeline 库，输出 gst-launch 命令",
+      "license": "Apache-2.0",
+      "executable": true,
+      "entry": "scripts/generate_pipeline.py",
+      "prerequisites": ["Python 3 标准库（零依赖）"],
+      "our_usage": "已实跑：为'处理录制 mp4 + 推理 + 落盘'场景生成真实 pipeline"
+    },
+    {
+      "name": "rag-blueprint",
+      "description": "NVIDIA RAG Blueprint 部署/配置/排障（Docker Compose / Helm）",
+      "license": "Apache-2.0",
+      "executable": false,
+      "prerequisites": ["NIM API key（NGC）", "Docker + Compose"],
+      "our_usage": "作为架构知识源：本地 BM25 检索器的设计参照其 references/deploy.md；全栈部署需 NGC key（未申请）"
+    },
+    {
+      "name": "tao-generate-image-grounding",
+      "description": "两步图像 grounding：(image, caption) → referring expressions → 定位",
+      "license": "Apache-2.0",
+      "executable": false,
+      "prerequisites": ["Docker + nvidia-container-toolkit", "TAO Data Services 容器（NGC）", "VLM 端点"],
+      "our_usage": "作为视觉巡检升级轨的设计参照；当前用本地 CV 轨（零依赖可复现）"
+    },
+    {
+      "name": "tao-generate-referring-expressions",
+      "description": "四步 referring-expression 管线：KITTI 框 → 区域描述 + 复核",
+      "license": "Apache-2.0",
+      "executable": false,
+      "prerequisites": ["Docker + nvidia-container-toolkit", "TAO Data Services 容器（NGC）", "VLM 端点"],
+      "our_usage": "作为'官方 Skill 串联'范式（grounding → 转换 → referring-expressions）的参照；double_check 复核思路已借鉴到我们的 verifier"
+    },
+    {
+      "name": "vss-ask-video",
+      "description": "向 VSS agent 的 video_understanding 工具提问（已录制片段）",
+      "license": "Apache-2.0",
+      "executable": false,
+      "prerequisites": ["VSS 服务运行中", "视频存储"],
+      "our_usage": "态势模块的视频问答升级路径；当前视觉输入用本地 CV 轨"
+    },
+    {
+      "name": "vss-generate-video-report",
+      "description": "VSS 分析报告生成（Mode A 逐片段 VLM / Mode B 事件区间）",
+      "license": "Apache-2.0",
+      "executable": false,
+      "prerequisites": ["VSS 服务运行中"],
+      "our_usage": "report-composer 的报告结构参照其 assets/*.md；本地报告生成已实现并经 verifier 复核"
+    }
+  ]
+}

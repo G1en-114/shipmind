@@ -30,9 +30,8 @@ flowchart TB
     subgraph SHIP["船端 · DGX Spark · 离线闭环 · 运行时零云端"]
         direction TB
         U["船员（语音 / 触屏）"]
-        ASR["StepAudio 本地 ASR / TTS"]
-        OC["OpenClaw 本地会话宿主<br/>官方 Skill pin 上游提交后整目录入 workspace"]
-        BRAIN["主 Agent 编排与路由<br/>Step 3.7 Flash（NIM 本地）"]
+        ASR["语音链路<br/>step-tts-2 / step-asr（StepFun API）"]
+        BRAIN["主 Agent 编排与路由<br/>本地 Qwen3-4B（离线）↔ step-3.7-flash（API）<br/>harness/brain.py 双端点 + 回归评测"]
 
         subgraph SL["Skill 层"]
             direction TB
@@ -73,13 +72,14 @@ flowchart TB
             E4["雷达：PPI 合成器"]
         end
 
-        INF["推理：vLLM 0.25（GB10 本地）<br/>知识：RAG Blueprint 本地向量库"]
+        INF["推理：vLLM 0.25 + Qwen3-4B-FP8（GB10 本地，127.0.0.1:9000）<br/>知识：本地 BM25（corpus/manuals/）"]
     end
 
     CLOUD["☁️ 开发期专用 · 组委会 Spark 云节点<br/>数据镜像 · 耗时训练 · 模型制品分发"]
     GH["📦 GitHub 仓库 —— 每日 push，节点无备份时代的灾备"]
 
-    U --> ASR --> OC --> BRAIN --> SL --> V --> W
+    U --> ASR
+    ASR --> BRAIN --> SL --> V --> W
     H -. 承载 .-> SL
     SEN --> SL
     INF --> BRAIN
@@ -117,7 +117,10 @@ flowchart TB
 - **机舱声学（双轨）**：启发式轨（信号特征 z-score，已实现）为可解释基线；ML 轨照 DCASE 2020 Task 2 官方配方重实现——log-mel 128×5=640 维 → 稠密自编码器（瓶颈 8 维）→ 重构误差评分，MIMII 泵/阀子集训练（CC BY-NC-SA，非商业可用），与启发式轨做 AUC 对照。
 - **声纹分类**：DeepShip 4 类（**按船划分防泄漏**）+ ShipsEar（申请中）；LOFAR/DEMON 特征 + 轻量分类器，方法参考 DEMONet (arXiv:2411.02758)。
 - **仪表与设备状态**：DGX Spark 上 TAO/NeMo 微调小 VLM。
-- **编排大脑**：Step 3.7 Flash（198B 总参/11B 激活，Apache 2.0，NVIDIA NIM NVFP4 Day-0），256K 上下文容纳整本手册；语音链路 StepAudio-Skills。
+- **编排大脑（双端点）**：本地 Qwen3-4B-FP8（vLLM 0.25，GB10，离线）↔ Step 3.7 Flash
+  （262K 上下文 + 视觉，StepFun API，在线）。198B 的 step-3.7-flash 无法在 GB10 本地部署
+  （显存与架构双重不可行，见上节说明），离线时降级本地端点。语音链路 step-tts-2 / step-asr
+  经 StepFun API（如实标注：非本地）。
 - 详细引文与许可见 `docs/REFERENCES.md`。
 
 ## 评测方法
@@ -130,15 +133,42 @@ flowchart TB
 
 ## 技术栈说明
 
-- **NVIDIA**：DGX Spark（GB10，ARM64）、DeepStream、TAO、VSS Blueprint、RAG Blueprint、vLLM 0.28、NVIDIA NIM（NVFP4）、skills CLI（npx skills@latest）、OpenClaw。
-- **StepFun 阶跃星辰**：Step 3.7 Flash（编排大脑，多模态）、StepAudio-Skills（本地 ASR/TTS）。
-- 模型切换只改 `base_url / model_name / api_key` 三值，切换后跑回归评测证明行为等价。
+### NVIDIA 侧
+
+- **DGX Spark（GB10，ARM64）**：全部本地算力载体；预置镜像 vLLM 0.25 + torch 2.11 + CUDA 13。
+- **vLLM 0.25**：本地推理端点（127.0.0.1:9000），服务 Qwen3-4B-FP8；GB10 需
+  `VLLM_USE_DEEP_GEMM=0` + `--gpu-memory-utilization 0.45`（统一内存架构，默认 0.9 会吃光整机）。
+- **官方 NVIDIA Skills**（pin commit `fd9f1466`，6 个已接入编排层，见下节）。
+- skills CLI（npx skills@latest）安装官方 Skill。
+
+### StepFun 阶跃星辰侧
+
+- **Step 3.7 Flash**（262K 上下文 + 视觉）：编排大脑的**在线端点**（经组委会 key 走 API）。
+- **step-tts-2 / step-asr**：语音播报与识别（当前经 StepFun API，**非本地**——如实标注）。
+
+### 编排大脑：双端点可切换
+
+| 端点 | 模型 | 网络 | 状态 |
+|---|---|---|---|
+| 本地（离线） | Qwen3-4B-FP8（vLLM，GB10） | 无需网络 | ✅ 已验证，路由 3/3 |
+| 在线 | step-3.7-flash（StepFun API） | 需网络 | ✅ 已验证，路由 3/3 |
+
+两端跑同一套用例做**回归评测**（`scripts/brain_check.py` 两正一负含负例），行为一致。
+切换只改 `base_url / model_name / api_key` 三个值（`harness/brain.py`）。
+
+> **为什么 step-3.7-flash 不本地部署**：198B×FP8≈198GB > GB10 统一内存 121GB；
+> NVFP4≈105GB 权重后 KV cache 与系统无剩余量；且节点 vLLM 0.25 不支持其架构
+> （PyPI 无 aarch64 wheel、节点无 nvcc、GitHub 不可达，三条升级路均实测不通）。
+> 离线场景下编排大脑自动降级到本地 Qwen3-4B。
 
 ## 部署说明
 
-1. DGX Spark（GB10）上 vLLM 0.28 提供本地推理端点；需设 `VLLM_USE_DEEP_GEMM=0` 与 `--moe-backend triton`（否则 DeepGEMM 报 `CUDA_ERROR_INVALID_IMAGE`）。
+1. DGX Spark（GB10）上 vLLM 0.25（预置镜像）提供本地推理端点；需设
+   `VLLM_USE_DEEP_GEMM=0`、`--gpu-memory-utilization 0.45`、`--enforce-eager`
+   （否则 DeepGEMM 报 `CUDA_ERROR_INVALID_IMAGE`；统一内存下默认显存配置会触发 OOM）。
 2. NIM 部署 Step 3.7 Flash；自研服务一律 `--host 0.0.0.0` 并加 token 鉴权（若经跳板映射暴露）。
-3. 官方 Skill 经 skills CLI（≥ v1.5.16）安装；OpenClaw 作本地会话宿主，整目录复制进 workspace 后 `openclaw skills list --eligible` 验证。
+3. 官方 Skill 经 skills CLI（≥ v1.5.16）安装后 vendored 进仓库 `official-skills/installed/`
+   （自包含，pin 上游 commit），由 `scripts/official_bridge.py` 接入编排层。
 4. 环境差异（本地端点、容器适配）在外部适配层处理，官方 Skill 本体不动。
 5. 数据集不入仓库（`data/` 已 ignore），由 `evals/make_fixtures.py` 确定性生成评测夹具；真实数据集按 `docs/DATA-LICENSES.md` 台账管理。
 6. 长训练任务进 tmux；重要产物以 git 远端为备份。

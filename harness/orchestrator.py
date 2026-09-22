@@ -48,7 +48,10 @@ class Orchestrator:
             name = choose_skill(query, ready)
             if name is None:
                 return None, "brain"
-            if name in self.skills and self.skills[name].entry:
+            s = self.skills.get(name)
+            if s and s.name != "official-bridge" and (
+                    (s.entry and s.origin == "self")
+                    or s.origin == "official"):
                 return name, "brain"
         except Exception:
             pass  # 大脑不可达时静默降级，值守系统不能因路由器失联而停摆
@@ -84,6 +87,25 @@ class Orchestrator:
             result["stderr_tail"] = proc.stderr.strip().splitlines()[-1]
         self.recorder.record(skill_name, args, output or {}, proc.returncode, duration)
         return result
+
+    def execute_official(self, skill_name: str, query: str) -> dict:
+        """派发到官方 NVIDIA Skill（经 scripts/official_bridge.py）。"""
+        skill = self.skills.get(skill_name)
+        if skill is None or skill.origin != "official":
+            return {"ok": False, "error": f"不是官方 Skill: {skill_name}"}
+        proc = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "official_bridge.py"),
+             "--skill", skill_name, "--query", query],
+            capture_output=True, text=True, cwd=str(REPO_ROOT), timeout=600)
+        raw = proc.stdout or ""
+        i = raw.find("{")
+        if i < 0:
+            return {"ok": False, "error": "桥接层无输出",
+                    "stderr_tail": proc.stderr[-300:]}
+        out, _ = json.JSONDecoder().raw_decode(raw[i:])
+        self.recorder.record(f"official/{skill_name}", [query],
+                             out, proc.returncode, 0.0)
+        return out
 
     def execute_plan(self, plan: list[dict]) -> list[dict]:
         return [self.execute_step(step["skill"], step["args"]) for step in plan]

@@ -1,0 +1,3 @@
+{"id": "agent-001", "type": "positive", "query": "3号泵刚才有金属摩擦声，帮我判断一下", "expect_route": "engine-room-acoustic-sentinel", "note": "大脑必须路由到声学哨兵", "entry": "scripts/agent_demo.py", "checker": "agent"}
+{"id": "agent-002", "type": "positive", "query": "帮我生成一个处理机舱录像的 deepstream 管线", "expect_route": "deepstream-generate-pipeline", "expect_origin": "official", "note": "大脑必须路由到官方 Skill 并经桥接层派发", "entry": "scripts/agent_demo.py", "checker": "agent"}
+{"id": "agent-003", "type": "negative", "query": "今天晚饭吃什么", "expect_route": null, "note": "闲聊必须负向路由（NONE），禁止硬凑", "entry": "scripts/agent_demo.py", "checker": "agent"}

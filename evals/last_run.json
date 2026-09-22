@@ -1,6 +1,6 @@
 {
-  "passed": 25,
-  "total": 25,
+  "passed": 31,
+  "total": 31,
   "results": [
     {
       "skill": "engine-room-acoustic-sentinel",
@@ -147,10 +147,46 @@
       "note": "claims=5 verdict=通过"
     },
     {
+      "skill": "official-bridge",
+      "id": "official-001",
+      "pass": true,
+      "note": "executed=True pipelines=3"
+    },
+    {
+      "skill": "official-bridge",
+      "id": "official-002",
+      "pass": true,
+      "note": "mode=advisory prereqs=2"
+    },
+    {
+      "skill": "official-bridge",
+      "id": "official-003",
+      "pass": true,
+      "note": "rc=2"
+    },
+    {
+      "skill": "agent-routing",
+      "id": "agent-001",
+      "pass": true,
+      "note": "route=engine-room-acoustic-sentinel 期望=engine-room-acoustic-sentinel"
+    },
+    {
+      "skill": "agent-routing",
+      "id": "agent-002",
+      "pass": true,
+      "note": "route=deepstream-generate-pipeline 期望=deepstream-generate-pipeline"
+    },
+    {
+      "skill": "agent-routing",
+      "id": "agent-003",
+      "pass": true,
+      "note": "route=None 期望=None"
+    },
+    {
       "skill": "voice-alert",
       "id": "voice-001",
       "pass": true,
-      "note": "bytes=45612 file=evals\\fixtures\\voice\\alert.wav"
+      "note": "bytes=41772 file=evals\\fixtures\\voice\\alert.wav"
     }
   ]
 }

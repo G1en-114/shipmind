@@ -15,9 +15,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULTS = {
-    # 节点本地 vLLM 端点（127.0.0.1 仅宿主机可达，公网暴露需另加 --api-key）
+    # 默认指向**实际在跑的**本地端点：GB10 上 vLLM 0.25 服务 Qwen3-4B-FP8。
+    # （Qwen3.6-35B 的架构 Qwen3_5MoeForConditionalGeneration 不被 vLLM 0.25 支持，
+    #   且 198B×FP8 超出 GB10 统一内存，故本地大脑用 4B；198B 的 step-3.7-flash 走
+    #   StepFun API，切换只改这三个值。）
     "BRAIN_BASE_URL": "http://127.0.0.1:9000/v1",
-    "BRAIN_MODEL": "qwen3.6-35b-a3b-fp8",
+    "BRAIN_MODEL": "qwen3-4b-fp8",
     "BRAIN_API_KEY": "",
 }
 
@@ -69,13 +72,25 @@ def chat(messages: list[dict], *, temperature: float = 0.2,
 ROUTER_PROMPT = """你是船舶值守系统的 Skill 路由器。根据用户请求，从候选 Skill 中选出最合适的一个；\
 如果没有任何候选适用，必须返回 "NONE"，禁止硬凑。
 
-候选 Skill（名称 | 用途）：
+候选 Skill（名称 | 来源 | 用途）：
 {catalog}
 
 规则：
 - 只输出 JSON，格式 {{"skill": "<名称或NONE>"}}，不要输出任何其他文字。
 - 与音频/机舱设备相关选 acoustic；与航线/船位相关选 route；与雷达目标相关选 radar；\
 与水听器/船型相关选 sonar；与日志生成相关选 navlog。
+- 来源为 official 的是 NVIDIA 官方 Skill（deepstream-generate-pipeline 生成视频分析管线、
+rag-blueprint 用于 RAG 部署、tao-* 用于图像定位、vss-* 用于视频问答报告），
+用户明确提到这些能力时选它们。
+
+示例：
+  请求"3号泵有异响" → {{"skill": "engine-room-acoustic-sentinel"}}
+  请求"偏航了吗" → {{"skill": "route-deviation-watch"}}
+  请求"生成 deepstream 管线" → {{"skill": "deepstream-generate-pipeline"}}
+  请求"今天天气如何" → {{"skill": "NONE"}}
+
+判定要点：只要请求涉及某个候选的职责范围就必须选它，禁止返回 NONE；
+只有与所有候选都完全无关（闲聊、常识、无关领域）时才返回 NONE。
 
 用户请求：{query}"""
 
