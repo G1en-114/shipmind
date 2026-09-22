@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "inventory_pending",
+  "items": [
+    {
+      "id": "fixtures",
+      "path": "evals/fixtures/",
+      "kind": "generated",
+      "producer": "evals/make_fixtures.py",
+      "status": "incomplete_generator",
+      "sha256": null,
+      "note": "需补表盘与报告正负例生成；勿标为全量可复现。"
+    },
+    {
+      "id": "sonar-model",
+      "path": "models/sonar_clf.npz",
+      "kind": "model",
+      "producer": "models/train_sonar.py",
+      "status": "provenance_pending",
+      "sha256": null,
+      "note": "实施时填写来源、版本、数据许可、训练划分及散列；本轮不训练。"
+    },
+    {
+      "id": "manuals",
+      "path": "corpus/manuals/",
+      "kind": "synthetic_corpus",
+      "producer": null,
+      "status": "inventory_pending",
+      "sha256": null,
+      "note": "自拟合成手册，冻结时按文件生成清单。"
+    }
+  ]
+}

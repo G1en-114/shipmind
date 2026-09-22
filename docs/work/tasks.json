@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "review_baseline": "0f03ca4",
+  "status": "scaffold_only",
+  "schedule_note": "阶段顺序已定；9/29 为旧文档中的窗口，实施前核实。",
+  "tasks": [
+    {
+      "id": "R01",
+      "priority": "P0",
+      "phase": 1,
+      "title": "依赖、夹具与模型制品复现",
+      "status": "pending",
+      "depends_on": [],
+      "files": [
+        "requirements.txt",
+        "evals/make_fixtures.py",
+        "evals/run_evals.py"
+      ],
+      "acceptance": [
+        "A01",
+        "A02"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R02",
+      "priority": "P0",
+      "phase": 1,
+      "title": "部署包清单与归档排除",
+      "status": "pending",
+      "depends_on": [],
+      "files": [
+        "scripts/node_deploy.py"
+      ],
+      "acceptance": [
+        "A03"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R05",
+      "priority": "P1",
+      "phase": 1,
+      "title": "自检路径、编码和进程超时",
+      "status": "pending",
+      "depends_on": [],
+      "files": [
+        "harness/selftest.py",
+        "harness/orchestrator.py",
+        "scripts/smoke.sh"
+      ],
+      "acceptance": [
+        "A04"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R03",
+      "priority": "P0",
+      "phase": 2,
+      "title": "融合链路缺输入与失败处理",
+      "status": "pending",
+      "depends_on": [
+        "R05"
+      ],
+      "files": [
+        "scripts/fusion_demo.py"
+      ],
+      "acceptance": [
+        "A05",
+        "A06"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R04",
+      "priority": "P0",
+      "phase": 2,
+      "title": "统一结论、证据、报告与播报",
+      "status": "pending",
+      "depends_on": [
+        "R03"
+      ],
+      "files": [
+        "skills-src/report-composer/scripts/verifier.py",
+        "skills-src/report-composer/scripts/compose_report.py",
+        "scripts/fusion_demo.py"
+      ],
+      "acceptance": [
+        "A07",
+        "A08"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R06",
+      "priority": "P1",
+      "phase": 2,
+      "title": "路由失败降级与端点配置",
+      "status": "pending",
+      "depends_on": [
+        "R05"
+      ],
+      "files": [
+        "harness/brain.py",
+        "harness/orchestrator.py",
+        "harness/registry.py"
+      ],
+      "acceptance": [
+        "A09"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R07",
+      "priority": "P1",
+      "phase": 2,
+      "title": "可执行机舱演示入口",
+      "status": "pending",
+      "depends_on": [
+        "R04",
+        "R06"
+      ],
+      "files": [
+        "scripts/agent_demo.py"
+      ],
+      "acceptance": [
+        "A10"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R08",
+      "priority": "P1",
+      "phase": 3,
+      "title": "离线、在线、真机评测分组和内容断言",
+      "status": "pending",
+      "depends_on": [
+        "R01",
+        "R05"
+      ],
+      "files": [
+        "evals/run_evals.py",
+        "skills-src/official-bridge/evals/agent_cases.jsonl"
+      ],
+      "acceptance": [
+        "A11"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R09",
+      "priority": "P1",
+      "phase": 3,
+      "title": "Web 数据来源、运行绑定与错误展示",
+      "status": "pending",
+      "depends_on": [
+        "R04",
+        "R07"
+      ],
+      "files": [
+        "web/server.py",
+        "web/index.html"
+      ],
+      "acceptance": [
+        "A12"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R10",
+      "priority": "P1",
+      "phase": 3,
+      "title": "视觉离群与模型评测口径",
+      "status": "pending",
+      "depends_on": [
+        "R01",
+        "R08"
+      ],
+      "files": [
+        "models/train_sonar.py",
+        "skills-src/engine-room-visual-inspector/scripts/visual_inspect.py",
+        "evals/BENCHMARK.md"
+      ],
+      "acceptance": [
+        "A13"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "R11",
+      "priority": "P1",
+      "phase": 4,
+      "title": "能力矩阵和文档一致性",
+      "status": "pending",
+      "depends_on": [
+        "R07",
+        "R09",
+        "R10"
+      ],
+      "files": [
+        "README.md",
+        "docs/HANDOFF.md",
+        "docs/MASTER-CHECKLIST.md",
+        "docs/PROJECT-PLAN.md",
+        "docs/architecture.md"
+      ],
+      "acceptance": [
+        "A14"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "V01",
+      "priority": "P1",
+      "phase": 4,
+      "title": "官方 GB10 与在线增强分开验收",
+      "status": "pending",
+      "depends_on": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10"
+      ],
+      "files": [
+        "docs/NODE-DEPLOY.md"
+      ],
+      "acceptance": [
+        "A15",
+        "A16"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D01",
+      "priority": "P1",
+      "phase": 5,
+      "title": "视频、征文、团队信息与合影准备",
+      "status": "pending",
+      "depends_on": [
+        "R11",
+        "V01"
+      ],
+      "files": [
+        "docs/work/DELIVERY.md"
+      ],
+      "acceptance": [
+        "A17"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D02",
+      "priority": "P1",
+      "phase": 6,
+      "title": "规则来源核实与最终提交",
+      "status": "pending",
+      "depends_on": [
+        "D01"
+      ],
+      "files": [
+        "docs/work/DELIVERY.md",
+        "docs/REFERENCES.md",
+        "docs/DATA-LICENSES.md"
+      ],
+      "acceptance": [
+        "A18"
+      ],
+      "evidence": [],
+      "notes": ""
+    }
+  ]
+}

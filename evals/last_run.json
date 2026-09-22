@@ -1,6 +1,6 @@
 {
-  "passed": 31,
-  "total": 31,
+  "passed": 34,
+  "total": 34,
   "results": [
     {
       "skill": "engine-room-acoustic-sentinel",
@@ -19,6 +19,18 @@
       "id": "acoustic-003",
       "pass": true,
       "note": "rc=2"
+    },
+    {
+      "skill": "engine-room-acoustic-sentinel",
+      "id": "acoustic-real-001",
+      "pass": true,
+      "note": "level=critical"
+    },
+    {
+      "skill": "engine-room-acoustic-sentinel",
+      "id": "acoustic-real-002",
+      "pass": true,
+      "note": "level=normal"
     },
     {
       "skill": "route-deviation-watch",
@@ -120,7 +132,7 @@
       "skill": "engine-room-visual-inspector",
       "id": "visual-001",
       "pass": true,
-      "note": "n=72 frac_mae=0.0558 rejected=4"
+      "note": "n=54 frac_mae=0.0198 rejected=22"
     },
     {
       "skill": "engine-room-visual-inspector",
@@ -186,7 +198,13 @@
       "skill": "voice-alert",
       "id": "voice-001",
       "pass": true,
-      "note": "bytes=41772 file=evals\\fixtures\\voice\\alert.wav"
+      "note": "bytes=43308 file=evals\\fixtures\\voice\\alert.wav"
+    },
+    {
+      "skill": "voice-alert",
+      "id": "voice-002",
+      "pass": true,
+      "note": "asr_text='三号泵alarm，切换备用泵。'"
     }
   ]
 }

@@ -1,1 +1,2 @@
 {"id": "voice-001", "type": "positive", "tts": "3号泵 alarm，切换备用泵", "expect_ok": true, "note": "TTS 必须合成出非空音频（StepFun step-tts-2）"}
+{"id": "voice-002", "type": "positive", "asr": "evals/fixtures/voice/alert.wav", "expect_ok": true, "note": "TTS→ASR 回环：对合成告警音频做识别，文本必须非空（不逐字断言）"}

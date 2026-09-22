@@ -91,6 +91,16 @@ def needle_angle(img: np.ndarray, cx: int, cy: int, r: int) -> tuple[float, floa
                       ((ang_pix >= lo) & (ang_pix <= hi))
                 if sel.sum() >= 4:
                     ang = float(ang_pix[sel].mean())
+                    # 双峰歧义检测：若非指针区还存在与主峰相当的第二径向结构
+                    # （≈180° 对侧的刻度线被误当指针），读数方向不可信 → 拒判
+                    second = hist.copy()
+                    second[sel if False else np.zeros(len(second), dtype=bool)] = 0
+                    for k in range(6):
+                        for off in ((best + k) % 360, (best - k) % 360):
+                            second[off] = 0
+                    others = second[second > 0]
+                    if others.size and float(others.max()) > 0.5 * peak:
+                        return 0.0, 0.0, "ambiguous"
                     return ang % 360, 0.55, "dark_needle"
 
     return 0.0, 0.0, "none"

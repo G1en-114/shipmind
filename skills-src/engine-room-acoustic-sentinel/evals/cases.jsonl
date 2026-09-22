@@ -1,3 +1,5 @@
 {"id": "acoustic-001", "type": "positive", "audio": "evals/fixtures/acoustic/anom/pump_bearing_worn_01.wav", "device": "pump", "expect_level_min": "watch", "expect_features": ["band_ratio_high"], "note": "轴承磨损样本：高频段能量显著上移，证据必须命中 band_ratio_high"}
 {"id": "acoustic-002", "type": "negative", "audio": "evals/fixtures/acoustic/normal/pump_normal_01.wav", "device": "pump", "expect_level": "normal", "note": "正常样本必须 normal。不可触发比触发更重要"}
 {"id": "acoustic-003", "type": "boundary", "audio": "evals/fixtures/acoustic/pump_short_2s.wav", "device": "pump", "expect": "rejected", "note": "时长不足 5 秒必须明确拒绝，不做模糊结论"}
+{"id": "acoustic-real-001", "type": "positive", "audio": "D:/datasets/eval_pump/anom/anomaly_id_00_00000000.wav", "device": "pump", "expect_level_min": "watch", "expect_features": ["band_ratio_high"], "note": "真实 MIMII pump 异常样本（需本地 D:/datasets 数据，节点/他机自动 SKIP）", "baseline": "D:/datasets/mimii_baseline"}
+{"id": "acoustic-real-002", "type": "negative", "audio": "D:/datasets/eval_pump/normal/normal_id_00_00000000.wav", "device": "pump", "expect_level": "normal", "note": "真实 MIMII pump 正常样本必须 normal", "baseline": "D:/datasets/mimii_baseline"}

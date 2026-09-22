@@ -18,8 +18,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from node_check import load_env  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+# 注意：models/ 里是训练**代码**（train_ae/train_full/train_sonar/eval_heuristic），
+# 必须同步；只排除权重与统计产物（*.npz）
 EXCLUDE = {".git", ".env", ".zcode", "evals/fixtures", "runs", "data",
-           "__pycache__", ".smoke", "models"}
+           "__pycache__", ".smoke"}
 
 
 def want(path: Path) -> bool:

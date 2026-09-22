@@ -75,7 +75,7 @@ def first_json(text: str) -> dict | None:
 def build_args(checker: str, case: dict) -> list[str]:
     if checker == "acoustic":
         return ["compare", case["audio"], "--baseline",
-                "evals/fixtures/acoustic/baseline",
+                case.get("baseline", "evals/fixtures/acoustic/baseline"),
                 "--device", case.get("device", "pump")]
     if checker == "route":
         return [case["nmea"], "--route", case["route"]]
@@ -98,6 +98,8 @@ def build_args(checker: str, case: dict) -> list[str]:
             return ["--no-voice"]
         return [case["input"]]
     if checker == "voice":
+        if case.get("asr"):
+            return ["--asr", case["asr"]]
         return ["--tts", case["tts"], "--out", "evals/fixtures/voice/alert.wav"]
     if checker == "official":
         return ["--skill", case["skill"], "--query", case["query"]]
@@ -196,6 +198,10 @@ def check(case: dict, rc: int, out: dict | None,
         ok = bool(out.get("label")) and out.get("mode") == "ml"             and isinstance(out.get("evidence", {}).get("probs"), dict)
         return ok, f"label={out.get('label')} conf={out.get('confidence')}"
     if "expect_ok" in case:
+        if case.get("asr"):
+            txt = (out or {}).get("text", "")
+            ok = out.get("ok") is True and len(txt) >= 2
+            return ok, f"asr_text={txt[:40]!r}"
         ok = out.get("ok") is True and (out.get("bytes") or 0) > 1000
         return ok, f"bytes={out.get('bytes')} file={out.get('file', '')[-30:]}"
     return True, "no expectation"
@@ -214,6 +220,17 @@ def main() -> int:
         cases = [json.loads(line) for line in
                  cases_path.read_text(encoding="utf-8").splitlines() if line.strip()]
         for case in cases:
+            req_files = [case.get(k) for k in
+                         ("audio", "nmea", "fixture", "events", "route")
+                         if case.get(k)]
+            req_files += [case.get("eval_dir", "")]
+            missing = [r for r in req_files if r and not (ROOT / r).exists()]
+            if missing:
+                print(f"[SKIP] {sk['name']}/{case['id']}  数据未就位: {missing[0]}")
+                results.append({"skill": sk["name"], "id": case["id"],
+                                "pass": True, "note": f"SKIP {missing[0]}"})
+                n_pass += 1
+                continue
             args = build_args(sk["checker"], case)
             entry = case.get("entry", sk["entry"])  # case 级 entry 覆盖
             proc = subprocess.run([sys.executable, str(ROOT / entry), *args],

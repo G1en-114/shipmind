@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task_id": null,
+  "status": "not_started",
+  "commit": null,
+  "environment": {
+    "os": null,
+    "python": null,
+    "device": null,
+    "network_mode": null
+  },
+  "changes": [],
+  "checks": [],
+  "artifacts": [],
+  "limitations": [],
+  "next_action": null
+}

@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "note": "验收规格，不是已实现的测试；所有结果初始为 not_run。",
+  "checks": [
+    {
+      "id": "A01",
+      "profile": "offline",
+      "title": "干净环境启动",
+      "input": "没有旧 fixtures、runs 和模型缓存的新目录",
+      "action": "按最终文档安装依赖并生成夹具、启动 Web",
+      "expected": "依赖和生成入口完整；缺模型明确提示，不读取旧缓存",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A02",
+      "profile": "offline",
+      "title": "制品来源可追溯",
+      "input": "模型或数据文件缺失/损坏",
+      "action": "检查制品清单并执行预检",
+      "expected": "来源、许可状态、版本、SHA-256 齐全；损坏/缺失报错",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A03",
+      "profile": "offline",
+      "title": "部署包内容",
+      "input": "有嵌套 fixtures、凭据样本和重复遍历的小型临时目录",
+      "action": "生成测试归档并枚举成员",
+      "expected": "不含排除项、不重复；必要代码和语料齐全；不上传",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A04",
+      "profile": "offline",
+      "title": "自检与进程边界",
+      "input": "正常输出、中文输出、卡住及失败的子进程",
+      "action": "运行自检和统一进程包装器回归",
+      "expected": "自检通过；编码一致；超时与非零状态留轨迹",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A05",
+      "profile": "offline",
+      "title": "无雷达目标",
+      "input": "targets=[]",
+      "action": "执行态势融合",
+      "expected": "不崩溃、不虚构默认目标、不生成依赖目标的处置",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A06",
+      "profile": "offline",
+      "title": "传感器失败",
+      "input": "缺文件、空输出、无效 JSON、超时、非零退出",
+      "action": "逐项执行融合",
+      "expected": "显示失败/降级；阻断依赖结论和播报",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A07",
+      "profile": "offline",
+      "title": "矛盾或无效引用",
+      "input": "缺引用、空证据、数值/单位/对象 ID 不一致",
+      "action": "审核结构化结论",
+      "expected": "拒绝矛盾；引用存在不等于事实已核实",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A08",
+      "profile": "offline",
+      "title": "输出同源",
+      "input": "含声学、态势与手册引用的有效场景",
+      "action": "比对 claims、审核、报告、UI 和播报输入",
+      "expected": "使用同一结论 ID；通过项完整；拒绝项不成为确定性处置",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A09",
+      "profile": "offline",
+      "title": "路由分类与配置",
+      "input": "合法 NONE、格式错误、不可达端点、冲突环境配置",
+      "action": "替身端点回归",
+      "expected": "合法拒绝不兜底；错误可追踪降级；环境变量优先；advisory 策略明确",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A10",
+      "profile": "offline",
+      "title": "端到端入口",
+      "input": "全部公开路由、一个完整机舱场景和失败场景",
+      "action": "执行演示入口",
+      "expected": "有真实参数或明确拒绝；失败非零；记录执行和审核",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A11",
+      "profile": "offline",
+      "title": "评测自身可靠性",
+      "input": "None 输出、未知断言、仅路由成功但执行失败",
+      "action": "运行检查器回归与离线集合",
+      "expected": "错误不能 pass；按环境分组；跳过单列；结果记录版本与指纹",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A12",
+      "profile": "web",
+      "title": "Web 内容与状态",
+      "input": "两个场景和一个失败场景",
+      "action": "检查六面板内容并浏览器截图",
+      "expected": "来源/时间/运行 ID 正确；无假设备标签；错误和过期可见",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A13",
+      "profile": "offline",
+      "title": "模型与视觉口径",
+      "input": "固定数据清单及已知反向读数样本",
+      "action": "检查划分并运行风险针对性评测",
+      "expected": "记录覆盖率、拒判率、最大误差和分组；无船 ID 不宣称按船隔离",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A14",
+      "profile": "manual",
+      "title": "文档一致性",
+      "input": "最终代码、测试结果和能力矩阵",
+      "action": "交叉检查 README/方案/清单/交接/架构图",
+      "expected": "区分离线核心、在线增强、advisory、生成管线与实际运行",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A15",
+      "profile": "gb10",
+      "title": "同版本真机离线验收",
+      "input": "审查通过的部署包与固定制品",
+      "action": "官方 GB10 断外网运行本地大脑、离线回归、Web、闭环",
+      "expected": "同一版本完成；保留设备、环境、耗时与无外网请求证据",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A16",
+      "profile": "online",
+      "title": "在线增强与失败降级",
+      "input": "已配置的授权在线端点",
+      "action": "分别验证大脑、TTS、ASR 与不可达情况",
+      "expected": "记录真实在线结果与降级；不计入离线通过数",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A17",
+      "profile": "manual",
+      "title": "提交材料就绪",
+      "input": "已冻结演示边界和用户提供的团队信息",
+      "action": "准备视频成片、征文、合影及仓库说明",
+      "expected": "材料能回指实测证据；账号/署名/发布安排就绪",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "A18",
+      "profile": "manual",
+      "title": "最终提交",
+      "input": "核实官方规则、来源与最终链接",
+      "action": "按后续发布授权提交并保存回执",
+      "expected": "链接可访问、版本明确、提交回执存在；不使用占位符冒充完成",
+      "status": "not_run",
+      "evidence": []
+    }
+  ]
+}
