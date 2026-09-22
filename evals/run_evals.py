@@ -74,10 +74,12 @@ def build_args(checker: str, case: dict) -> list[str]:
     if checker == "radar":
         return [case["fixture"]]
     if checker == "sonar":
-        return [case["audio"], "--mode", "rule"]
+        return [case["audio"], "--mode", case.get("mode", "rule")]
     if checker == "navlog":
         return [case["events"]]
     if checker == "rag":
+        if case.get("mode") == "selftest":
+            return ["--selftest"]
         return ["--query", case["query"], "--top-k", "3", "--json"]
     if checker == "visual":
         if case.get("mode") == "aggregate":
@@ -90,9 +92,15 @@ def build_args(checker: str, case: dict) -> list[str]:
     raise ValueError(checker)
 
 
-def check(case: dict, rc: int, out: dict | None) -> tuple[bool, str]:
+def check(case: dict, rc: int, out: dict | None,
+          out_raw: str = "") -> tuple[bool, str]:
     if case.get("expect") == "rejected":
         return rc == 2, f"rc={rc}"
+    # 纯文本自检（如 classify_encounter --selftest）不要求 JSON 输出
+    if case.get("expect_pass") is not None:
+        ok = case["expect_pass"] == ("5/5 passed" in (out_raw or "")
+                                     and rc == 0)
+        return ok, f"rc={rc} selftest={'5/5' if '5/5' in (out_raw or '') else '未全过'}"
     if rc == 2 or out is None:
         return False, f"意外拒绝或无 JSON (rc={rc})"
     if "expect_level" in case:
@@ -149,6 +157,9 @@ def check(case: dict, rc: int, out: dict | None) -> tuple[bool, str]:
             return ok, f"verdict={v.get('verdict')}"
         ok = v.get("n_rejected", 0) >= 1 and "[待复核]" in out.get("report_md", "")
         return ok, f"verdict={v.get('verdict')} 报告含待复核={'[待复核]' in out.get('report_md','')}"
+    if case.get("expect_ok") and case.get("mode") == "ml":
+        ok = bool(out.get("label")) and out.get("mode") == "ml"             and isinstance(out.get("evidence", {}).get("probs"), dict)
+        return ok, f"label={out.get('label')} conf={out.get('confidence')}"
     if "expect_ok" in case:
         ok = out.get("ok") is True and (out.get("bytes") or 0) > 1000
         return ok, f"bytes={out.get('bytes')} file={out.get('file', '')[-30:]}"
@@ -169,10 +180,11 @@ def main() -> int:
                  cases_path.read_text(encoding="utf-8").splitlines() if line.strip()]
         for case in cases:
             args = build_args(sk["checker"], case)
-            proc = subprocess.run([sys.executable, str(ROOT / sk["entry"]), *args],
+            entry = case.get("entry", sk["entry"])  # case 级 entry 覆盖
+            proc = subprocess.run([sys.executable, str(ROOT / entry), *args],
                                   capture_output=True, text=True, cwd=ROOT)
             out = first_json(proc.stdout or "")
-            ok, note = check(case, proc.returncode, out)
+            ok, note = check(case, proc.returncode, out, proc.stdout or "")
             n_pass += ok
             results.append({"skill": sk["name"], "id": case["id"],
                             "pass": ok, "note": note})

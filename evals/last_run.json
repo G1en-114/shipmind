@@ -1,6 +1,6 @@
 {
-  "passed": 22,
-  "total": 22,
+  "passed": 24,
+  "total": 24,
   "results": [
     {
       "skill": "engine-room-acoustic-sentinel",
@@ -69,6 +69,12 @@
       "note": "label=unknown"
     },
     {
+      "skill": "sonar-acoustic-fingerprint",
+      "id": "sonar-003",
+      "pass": true,
+      "note": "label=Cargo conf=1.0"
+    },
+    {
       "skill": "navlog-autofill",
       "id": "navlog-001",
       "pass": true,
@@ -105,6 +111,12 @@
       "note": "answers=0 note=有"
     },
     {
+      "skill": "manual-rag-query",
+      "id": "colregs-001",
+      "pass": true,
+      "note": "rc=0 selftest=5/5"
+    },
+    {
       "skill": "engine-room-visual-inspector",
       "id": "visual-001",
       "pass": true,
@@ -132,7 +144,7 @@
       "skill": "voice-alert",
       "id": "voice-001",
       "pass": true,
-      "note": "bytes=45612 file=evals\\fixtures\\voice\\alert.wav"
+      "note": "bytes=41386 file=evals\\fixtures\\voice\\alert.wav"
     }
   ]
 }

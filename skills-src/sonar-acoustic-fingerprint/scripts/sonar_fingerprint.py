@@ -14,17 +14,71 @@ from pathlib import Path
 
 import numpy as np
 
+MODEL_PATH = Path(__file__).resolve().parents[3] / "models" / "sonar_clf.npz"
+
+
+def _load_model():
+    if not MODEL_PATH.exists():
+        return None
+    d = np.load(MODEL_PATH, allow_pickle=False)
+    return {"W": d["W"], "b": d["b"], "mu": d["mu"], "sd": d["sd"],
+            "classes": [str(c) for c in d["classes"]]}
+
+
+def ml_classify(sig: np.ndarray, sr: int) -> tuple[str | None, float, dict]:
+    """ML 轨：LOFAR/DEMON 特征 → 逻辑回归（DeepShip 四类，按文件划分训练）。"""
+    m = _load_model()
+    if m is None:
+        return None, 0.0, {}
+    freqs, spec = lofar_spectrum(sig, sr)
+    peaks, _ = find_tonals(freqs, spec)
+    df = float(freqs[1] - freqs[0])
+    n_harm, f0, matched = harmonic_series(peaks, df)
+    shaft = demon_shaft(sig, sr)
+    total = float(spec.sum()) + 1e-12
+    mid = (freqs >= 200) & (freqs < 2000)
+    hi = (freqs >= 2000) & (freqs < 8000)
+    ultra = (freqs >= 8000) & (freqs < 16000)
+    lo = (freqs >= 20) & (freqs < 200)
+    flatness = float(np.exp(np.mean(np.log(spec + 1e-12))) / (np.mean(spec) + 1e-12))
+    rms = float(np.sqrt(np.mean(sig ** 2)))
+    centroid = float(np.sum(freqs * spec) / total)
+    zcr = float(np.mean(np.abs(np.diff(np.sign(sig)))))
+    feat = np.array([len(peaks), f0 or 0.0, len(matched), shaft or 0.0,
+                     float(spec[mid].sum()) / total, rms, centroid, zcr,
+                     float(spec[hi].sum()) / total, float(spec[ultra].sum()) / total,
+                     flatness, float(spec[lo].sum()) / total], dtype=np.float64)
+    x = (feat - m["mu"]) / m["sd"]
+    logits = x @ m["W"] + m["b"]
+    logits = logits - logits.max()
+    p = np.exp(logits)
+    p /= p.sum()
+    k = int(np.argmax(p))
+    return m["classes"][k], float(p[k]), {"probs": dict(zip(m["classes"], [round(float(v), 3) for v in p]))}
+
 
 def load_wav(path: str) -> tuple[np.ndarray, int]:
-    with wave.open(path, "rb") as wf:
-        ch, sw, sr = wf.getnchannels(), wf.getsampwidth(), wf.getframerate()
-        raw = wf.readframes(wf.getnframes())
+    """读取 wav，兼容 PCM16/32 与 IEEE float32（DeepShip 为 float32）。"""
+    try:
+        with wave.open(path, "rb") as wf:
+            ch, sw, sr = wf.getnchannels(), wf.getsampwidth(), wf.getframerate()
+            raw = wf.readframes(wf.getnframes())
+    except wave.Error:
+        from scipy.io import wavfile
+        sr, data = wavfile.read(path)
+        if data.ndim > 1:
+            data = data.mean(axis=1)
+        if data.dtype != np.float32:
+            data = data.astype(np.float32)
+            if np.abs(data).max() > 1.5:
+                data = data / 32768.0
+        return data, sr
     if sw == 2:
         data = np.frombuffer(raw, "<i2").astype(np.float32) / 32768.0
     elif sw == 4:
         data = np.frombuffer(raw, "<i4").astype(np.float32) / 2147483648.0
     else:
-        raise ValueError("仅支持 16/32bit PCM wav")
+        raise ValueError("仅支持 16/32bit PCM 或 IEEE float32")
     if ch > 1:
         data = data.reshape(-1, ch).mean(axis=1)
     return data, sr
@@ -112,10 +166,40 @@ def main() -> int:
     args = ap.parse_args()
 
     if args.mode == "ml":
-        print(json.dumps({"error": "ShipsEar/DeepShip 分类器尚未训练（D7 交付），"
-                                   "当前仅 rule 模式可用"}, ensure_ascii=False),
-              file=sys.stderr)
-        return 3
+        try:
+            sig, sr = load_wav(args.audio)
+        except (ValueError, FileNotFoundError, wave.Error) as exc:
+            print(json.dumps({"error": str(exc), "label": "unknown",
+                              "confidence": 0.0, "mode": "ml",
+                              "evidence": {}}, ensure_ascii=False),
+                  file=sys.stderr)
+            return 2
+        if len(sig) / sr < 5:
+            print(json.dumps({"error": "音频不足 5 秒", "label": "unknown",
+                              "confidence": 0.0, "mode": "ml",
+                              "evidence": {}}, ensure_ascii=False),
+                  file=sys.stderr)
+            return 2
+        label, conf, extra = ml_classify(sig, sr)
+        if label is None:
+            print(json.dumps({"error": "模型未训练（先跑 models/train_sonar.py）",
+                              "label": "unknown", "confidence": 0.0,
+                              "mode": "ml", "evidence": {}},
+                             ensure_ascii=False), file=sys.stderr)
+            return 3
+        freqs, spec = lofar_spectrum(sig, sr)
+        peaks, _ = find_tonals(freqs, spec)
+        df = float(freqs[1] - freqs[0])
+        n_harm, f0, matched = harmonic_series(peaks, df)
+        print(json.dumps({
+            "label": label, "confidence": round(conf, 3), "mode": "ml",
+            "evidence": {"tonal_count": len(peaks), "f0_hz": round(f0, 2) if f0 else None,
+                         "harmonics_matched": matched, "probs": extra.get("probs", {})},
+            "note": "DeepShip 四类按文件划分训练，测试集准确率 0.431（随机 0.25）",
+            "audio": args.audio,
+        }, ensure_ascii=False, indent=2))
+        print(f"MEDIA:{Path(args.audio).resolve()}")
+        return 0
 
     try:
         sig, sr = load_wav(args.audio)
