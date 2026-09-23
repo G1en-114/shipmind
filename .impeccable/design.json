@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-23T00:00:00+08:00",
+  "title": "Design System: ShipMind 智舷",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Apple 蓝" },
+      "teal": { "role": "secondary", "displayName": "辅助浅蓝" },
+      "warning": { "role": "semantic", "displayName": "关注琥珀" },
+      "danger": { "role": "semantic", "displayName": "告警珊瑚" },
+      "bg": { "role": "neutral", "displayName": "浅灰工作底" },
+      "text": { "role": "neutral", "displayName": "深色正文" }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "操作页标题", "purpose": "Operate 场景的页面入口。" },
+      "body": { "displayName": "系统中文正文", "purpose": "Operate 和 Read 共用系统字体栈，无外部字体依赖。" },
+      "display-read": { "displayName": "介绍开场", "purpose": "Read 场景首屏标题。" },
+      "body-read": { "displayName": "证据阅读", "purpose": "手册引用与说明段落。" },
+      "measurement": { "displayName": "等宽测量", "purpose": "突出读数，单位使用次要文字。" }
+    },
+    "shadows": [
+      { "name": "mobile-navigation", "value": "12px 0 28px #0004", "purpose": "移动导航覆盖内容时的侧向阴影；静态面板无阴影。" }
+    ],
+    "motion": [
+      { "name": "state-duration", "value": "160ms", "purpose": "按钮、链接状态和手机导航展开。" },
+      { "name": "ease", "value": "cubic-bezier(.2,.8,.2,1)", "purpose": "统一状态过渡。" },
+      { "name": "reduced-motion", "value": "none", "purpose": "prefers-reduced-motion: reduce 时关闭过渡和动画，scroll-behavior 使用 auto。" }
+    ],
+    "breakpoints": [
+      { "name": "wide-min", "value": "1550px" },
+      { "name": "compact-max", "value": "1180px" },
+      { "name": "single-column-max", "value": "940px" },
+      { "name": "mobile-max", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "刷新观测主按钮",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "主要操作；包含悬停、焦点与禁用反馈。",
+      "html": "<button class=\"ds-primary\">刷新观测</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;border:1px solid transparent;border-radius:980px;padding:9px 17px;min-height:38px;font:600 12px/1.6 var(--font);cursor:pointer;transition:background .16s var(--ease),color .16s var(--ease),border-color .16s var(--ease)}.ds-primary:hover:not(:disabled){background:#0077ed}.ds-primary:focus-visible{outline:3px solid rgba(0,113,227,.3);outline-offset:2px}.ds-primary:disabled{cursor:not-allowed;opacity:.45}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "当前导航",
+      "kind": "nav",
+      "refersTo": "navigation-selected",
+      "description": "文字与图标共同表达导航目的，aria-current 标记当前页。",
+      "html": "<a class=\"ds-nav\" href=\"#overview\" aria-current=\"page\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg>值班总览</a>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--muted);font:13px/1.5 var(--font);text-decoration:none;transition:background .16s var(--ease),color .16s var(--ease)}.ds-nav:hover{background:rgba(0,0,0,.035)}.ds-nav[aria-current=page]{background:#e8e8ed;color:var(--text);font-weight:600}.ds-nav:focus-visible{outline:3px solid rgba(0,113,227,.3);outline-offset:2px}@media(prefers-reduced-motion:reduce){.ds-nav{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "清晰的值班台",
+    "overview": "对当前实现的归档：浅灰画布、白色分组面板、系统中文字体、轻边界和单一蓝色操作色构成船端仪器界面。总览强调观测对照，手册与报告使用更宽松行距和受控行宽。",
+    "keyCharacteristics": ["浅色分层，静态面板使用轻微阴影", "Apple 蓝指示操作与选中，语义色辅助状态文字", "来源、测量和证据在视觉上可辨"],
+    "rules": [
+      { "name": "状态可读", "body": "颜色配合状态文字、图形或选中标记；单靠色点不能表达分析是否成功。", "section": "colors" }
+    ],
+    "dos": ["复用现有系统中文字体和等宽测量排版", "让来源可查、焦点可见并尊重减少动态设置", "窄屏按阅读顺序下移，宽表格内部滚动"],
+    "donts": ["不把合成观测包装为实时遥测", "不用正常状态色掩盖失败或待复核", "不为介绍页另建字体与色板"]
+  }
+}

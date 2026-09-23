@@ -198,7 +198,7 @@
       "skill": "voice-alert",
       "id": "voice-001",
       "pass": true,
-      "note": "bytes=43308 file=evals\\fixtures\\voice\\alert.wav"
+      "note": "bytes=46378 file=evals\\fixtures\\voice\\alert.wav"
     },
     {
       "skill": "voice-alert",
