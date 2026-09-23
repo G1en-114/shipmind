@@ -9,6 +9,6 @@
     {"start": 17, "end": 28, "id": "evidence", "title": "FOUR STREAMS · ONE BRIEFING", "line": "Acoustics · Gauge · Radar · Route", "voiceover": "It unites acoustics, gauges, radar, sonar, and route movement into one clear, evidence-backed picture."},
     {"start": 28, "end": 44, "id": "console", "title": "ASK: HOW ARE THINGS NOW?", "line": "Qwen3-4B-FP8 answers on DGX Spark in ~3s.", "voiceover": "The engineer asks, “How are things now?” In seconds, the local AI traces the change, cites the signals, and shows what to inspect next."},
     {"start": 44, "end": 54, "id": "platform", "title": "THE PLATFORM STACK", "line": "Six products · one working path", "voiceover": "Agent Skills, DeepStream, StepFun, Qwen, and vLLM turn Spark into a complete, reproducible workflow."},
-    {"start": 54, "end": 60, "id": "end", "title": "INTELLIGENCE STAYS ON BOARD", "line": "ShipMind · Team Devx", "voiceover": "From scattered signals to confident action—intelligence stays on board. ShipMind."}
+    {"start": 54, "end": 60, "id": "end", "title": "INTELLIGENCE STAYS ON BOARD", "line": "ShipMind · Team Devx", "voiceover": "Safer ships. Clearer decisions. ShipMind."}
   ]
 }

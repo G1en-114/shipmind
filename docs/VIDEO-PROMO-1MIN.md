@@ -1,4 +1,4 @@
-# ShipMind 一分钟宣传片 v9
+# ShipMind 一分钟宣传片 v10
 
 定位：英文主画面、60 秒、1920×1080、30 fps。视觉概念为 **“一页不断被贴满的航海日志”**。本片只负责建立记忆点和证明真机工作负载，完整功能操作留给五分钟演示。
 
@@ -18,7 +18,7 @@
 
 底图不是静帧。每个场景都会重新裁切和排列夜海、海图、半调纹理与胶带碎片；碎片分别从画外进入，撕裂边缘持续低频起伏，折痕的高光和阴影沿纸面缓慢移动。场景切换时更换素材占位和主次关系，不能让同一张海图在六个镜头中保持同一构图。
 
-v9 以 v6 的稳定构图和阅读节奏为基准。主场景之间参考 `transition-reference.mp4` 的物体转场：Spark 设备退成证据卡堆，雷达与声呐纸片收拢后揭示 AI 操作台，操作台缩成六张平台缩略卡，末段品牌卡向外散开。转场只移动拼贴物件，不缩放整幅画面；落稳后标题、产品、卡片和字幕保持静止。纸张闪白、轻景深和短促撞击只出现在切换窗口，背景层继续保留 Spark 放射线、声呐同心波、AI 扫描网格、六品牌连接线、海图航迹与边缘纸屑。
+v10 以 v6 的稳定构图和阅读节奏为基准。主场景之间参考 `transition-reference.mp4` 的物体转场：Spark 设备退成证据卡堆，雷达与声呐纸片收拢后揭示 AI 操作台，操作台缩成六张平台缩略卡，末段品牌卡向外散开。转场只移动拼贴物件，不缩放整幅画面；落稳后标题、产品、卡片和字幕保持静止。第二幕将 Spark 放在左侧，规格信息改成彩色报纸档案卡。第四幕将真实操作台放在左侧，右侧使用专门生成的航海 AI 值班官拼贴主体，以雷达、声学纸带和 `ASK / TRACE / CITE` 标签解释人的判断路径。末幕以货船为主体，并加入 `SAFER SHIPS · CLEARER DECISIONS` 双层便签。
 
 信息卡不能单独出现。每张文字纸片必须和对应的物件碎片组成一个视觉单元：异响配波形、手册配书页与书签、日志配表格、声学配频谱、表盘配指针、雷达配回波、航线配折线。标题固定在左上纸签，主要证据占右侧或下方，印章只承担结论，不与主证据争抢中心。
 
@@ -72,12 +72,12 @@ v9 以 v6 的稳定构图和阅读节奏为基准。主场景之间参考 `trans
 
 | 时间 | 配音 |
 |---|---|
-| 0:00 | At three a.m. mid-ocean, one engineer may be watching an entire ship. |
-| 0:06 | NVIDIA DGX Spark is the local compute behind ShipMind, powered by the GB10 Grace Blackwell Superchip and unified memory. |
-| 0:17 | It combines acoustic changes, gauge readings, radar detections, sonar evidence, and route deviation into one evidence-bound briefing. |
-| 0:28 | Ask how things are now. The local Qwen model, served by vLLM on Spark, answers with evidence and keeps the human in review. |
-| 0:44 | DGX Spark, NVIDIA Agent Skills, DeepStream, StepFun, Qwen, and vLLM form one reproducible agent workload. |
-| 0:54 | Synthetic inputs. Real Spark compute. Intelligence stays on board. ShipMind. |
+| 0:00 | At three a.m., an unfamiliar vibration breaks a ship's steady rhythm. |
+| 0:06 | With NVIDIA DGX Spark onboard, ShipMind brings powerful local AI to the watch—compact, responsive, and ready beyond the network. |
+| 0:17 | It unites acoustics, gauges, radar, sonar, and route movement into one clear, evidence-backed picture. |
+| 0:28 | The engineer asks, “How are things now?” In seconds, the local AI traces the change, cites the signals, and shows what to inspect next. |
+| 0:44 | Agent Skills, DeepStream, StepFun, Qwen, and vLLM turn Spark into a complete, reproducible workflow. |
+| 0:54 | Safer ships. Clearer decisions. ShipMind. |
 
 约 91 词，留出纸张声、键盘声和盖章声的呼吸空间。先录制配音，再微调镜头边界，不通过加速配音强行卡时长。
 
@@ -101,6 +101,7 @@ v9 以 v6 的稳定构图和阅读节奏为基准。主场景之间参考 `trans
 - 货船剪贴：`scripts/video/assets/gen/cargo-ship-newspaper-v1.png`
 - 雷达剪贴：`scripts/video/assets/gen/marine-radar-newspaper-v1.png`
 - 声呐剪贴：`scripts/video/assets/gen/sonar-hydrophone-newspaper-v1.png`
+- AI 值班官剪贴：`scripts/video/assets/gen/ai-duty-officer-collage-v1.png`
 - Spark 英文真机截图：`runs/ui-review/spark-ai-english.png`
 - 6 秒开场样片：`runs/delivery/video/shipmind-collage-v5-intro-preview.mp4`
 - 60 秒无声母版：`runs/delivery/video/shipmind-promo-v5-silent.mp4`
@@ -128,7 +129,7 @@ v7 带音效成片同样为 1800 帧、1920×1080、30 fps、60.0 秒；音轨�
 
 v8 带音效成片为 1800 帧、1920×1080、30 fps、60.0 秒，文件大小 98,309,230 字节，SHA-256 为 `1F8744033A0F8846844C49AE55B00CAEF96A59C928AA25639F1E3905FBEBC7B7`。
 
-v9 最终交付（当前推荐版本）：
+v9 最终交付：
 
 - 完整男声与音效成片：`runs/delivery/video/shipmind-promo-v9-voiced.mp4`
 - 无声母版：`runs/delivery/video/shipmind-promo-v9-silent.mp4`
@@ -142,6 +143,17 @@ v9 最终交付（当前推荐版本）：
 
 v9 完整成片已验收为 1800 帧、1920×1080、30 fps、60.0 秒；音轨为 48 kHz 双声道 AAC。文件大小 98,548,130 字节，SHA-256 为 `B4DC241DF8022D1FBA51D7930B2EFB49131D4C28229F3E3452843B59D1243669`。
 
+v10 最终交付（当前推荐版本）：
+
+- 完整男声与音效成片：`runs/delivery/video/shipmind-promo-v10-voiced.mp4`
+- 无声母版：`runs/delivery/video/shipmind-promo-v10-silent.mp4`
+- 独立中年广播男声轨：`runs/delivery/video/shipmind-voiceover-v10.wav`
+- 男声与普通音效混音：`runs/delivery/video/shipmind-promo-v10-voice-sfx.wav`
+- 同步英文字幕：`runs/delivery/video/shipmind-voiceover-en.srt`
+- v10 接触表：`runs/delivery/video/shipmind-promo-v10-contact.jpg`
+
+v10 完整成片已验收为 1800 帧、1920×1080、30 fps、60.0 秒；音轨为 48 kHz 双声道 AAC。文件大小 107,546,544 字节，SHA-256 为 `C1ECEE0986C68DFA3D3EB286CAC3DCC0180D9C6BEDDEBE6A83AAB044B2253A20`。
+
 生成压缩样片：
 
 ```powershell
@@ -154,7 +166,7 @@ python scripts\video\collage.py --mode preview
 python scripts\video\collage.py --mode full
 ```
 
-无声母版输出为 `runs/delivery/video/shipmind-promo-v9-silent.mp4`。配音与纸张、键盘、雷达、声呐、盖章等普通音效由脚本生成和混音，便于按同一时间线复现。
+无声母版输出为 `runs/delivery/video/shipmind-promo-v10-silent.mp4`。配音与纸张、键盘、雷达、声呐、盖章等普通音效由脚本生成和混音，便于按同一时间线复现。
 
 ## 发布前检查
 

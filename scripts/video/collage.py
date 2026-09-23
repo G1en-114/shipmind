@@ -455,25 +455,19 @@ def spark_hero(base: Image.Image, product: Image.Image, progress: float, t: floa
         xx=round(tx-(1-p)*(650+i*95));paste_shadow(base,back,(xx-14,ty+9),angle=(-3+i*2));paste_shadow(base,tag,(xx,ty),angle=(-1.5+i*1.4))
 
 
-def console_sidecar(base: Image.Image, product: Image.Image, progress: float, t: float):
+def console_sidecar(base: Image.Image, operator: Image.Image, progress: float, t: float):
     """Fill the console's right column with the local inference path that explains the answer."""
     p=ease_out_back(progress*1.5-.18)
     if p<=0:return
-    device=contain(product.convert("RGBA"),(440,330));x=round(1435+(1-p)*560);y=285
-    paste_shadow(base,device,(x,y),angle=2)
-    labels=(("ASK","THE WATCH QUESTION",BLUE),("TRACE","THE LIVE SIGNALS",RED),("CITE","THE NEXT ACTION",GREEN))
-    points=[]
-    for i,(head,sub,color) in enumerate(labels):
+    officer=contain(operator.convert("RGBA"),(590,690));x=round(1335+(1-p)*660);y=250
+    paste_shadow(base,officer,(x,y),angle=1.2)
+    labels=(("ASK",BLUE),("TRACE",RED),("CITE",GREEN))
+    for i,(head,color) in enumerate(labels):
         q=ease_out_back(progress*1.7-.30-i*.10)
         if q<=0:continue
-        card=paper_card((390,92),fill=("#fff6d8","#dcebf1","#f3dfda")[i],radius=3);cd=ImageDraw.Draw(card)
-        cd.rectangle((18,17,83,73),fill=color);cd.text((28,31),head,font=F_SMALL,fill="white")
-        cd.text((101,20),sub,font=F_MONO,fill=NAVY);cd.line((102,61,356,61),fill=color,width=4)
-        card.putalpha(ragged_mask(card.size,t,910+i));cy=610+i*100;cx=round(1450+(1-q)*490)
-        paste_shadow(base,card,(cx,cy),angle=(-2+i*2));points.append((cx+25,cy+46))
-    if len(points)>1:
-        d=ImageDraw.Draw(base);d.line(points,fill=(20,48,77,150),width=5)
-        for px,py in points:d.ellipse((px-7,py-7,px+7,py+7),fill=(255,211,78,230))
+        card=torn_text(head,F_MONO,("#fff6d8","#dcebf1","#f3dfda")[i],NAVY,(22,14),910+i)
+        cy=590+i*86;cx=round(1370+(1-q)*510)
+        paste_shadow(base,card,(cx,cy),angle=(-4+i*4))
 
 
 def platform_stack(base: Image.Image, progress: float, t: float):
@@ -533,11 +527,11 @@ def end_hero(base: Image.Image, ship: Image.Image, progress: float, t: float):
         label=paper_card((620,122),fill="#fffdf8",radius=4);ld=ImageDraw.Draw(label)
         ld.text((28,20),"SAFER SHIPS · CLEARER DECISIONS",font=F_MONO,fill=NAVY)
         ld.text((30,67),"EVIDENCE FOR EVERY WATCH",font=F_SMALL,fill=RED);ld.line((28,101,585,101),fill=BLUE,width=5)
-        label.putalpha(ragged_mask(label.size,t,971));lx=round(1115+(1-q)*760);ly=790
+        label.putalpha(ragged_mask(label.size,t,971));lx=round(1115+(1-q)*760);ly=750
         paste_shadow(base,back,(lx-12,ly+11),angle=2.2);paste_shadow(base,label,(lx,ly),angle=-1.4)
 
 
-def render(source_t: float, bg: Image.Image, desktop: Image.Image, product: Image.Image, ship: Image.Image, radar_art: Image.Image, sonar_art: Image.Image, scenes: list[dict]) -> Image.Image:
+def render(source_t: float, bg: Image.Image, desktop: Image.Image, product: Image.Image, ship: Image.Image, operator: Image.Image, radar_art: Image.Image, sonar_art: Image.Image, scenes: list[dict]) -> Image.Image:
     base = animated_background(source_t, bg)
     tick_t = math.floor(source_t * 12) / 12
     base = Image.alpha_composite(base, Image.new("RGBA", (W, H), (245, 241, 230, 28)))
@@ -565,8 +559,8 @@ def render(source_t: float, bg: Image.Image, desktop: Image.Image, product: Imag
     elif tick_t < 44:
         p = (tick_t - 28) / 16; title_block(base, "ASK THE DUTY OFFICER", '“How are things now?”')
         ui_card(base, desktop, min(1, p * 2.2))
-        console_sidecar(base,product,p,tick_t)
-        if p > .55: stamp(base, "~3s ON SPARK", (1510, 930), GREEN, -5, 38)
+        console_sidecar(base,operator,p,tick_t)
+        if p > .55: stamp(base, "~3s ON SPARK", (1515, 225), GREEN, -5, 38)
     elif tick_t < 54:
         p = (tick_t - 44) / 10; title_block(base, "THE PLATFORM STACK", "Sponsor products inside the working path.")
         platform_stack(base,p,tick_t); stamp(base,"34 / 34 CURRENT CHECKS",(126,455),RED,-4,31)
@@ -575,10 +569,10 @@ def render(source_t: float, bg: Image.Image, desktop: Image.Image, product: Imag
         end_hero(base,ship,p,tick_t)
         stamp(base, "SYNTHETIC · REVIEWED · REPRODUCIBLE", (122, 650), RED, -4, 31)
         d.text((124, 875), "github.com/G1en-114/shipmind", font=F_MONO, fill=NAVY)
-        fade = max(0, min(1, (p - .82) / .18))
+        fade = max(0, min(1, (p - .88) / .12))
         base = Image.alpha_composite(base, Image.new("RGBA", (W, H), (0, 0, 0, round(255 * fade))))
     base=transition_fx(base,tick_t,desktop,product,radar_art,sonar_art)
-    if tick_t<59.2: voiceover_caption(base,scenes[scene_index]["voiceover"],500+scene_index)
+    if tick_t<59.85: voiceover_caption(base,scenes[scene_index]["voiceover"],500+scene_index)
     return base.convert("RGB")
 
 
@@ -592,13 +586,14 @@ def main():
     desktop = Image.open(desktop_path).convert("RGB")
     product = Image.open(ROOT / "scripts/video/assets/gen/dgx-spark-newspaper-v2.png").convert("RGBA")
     ship=Image.open(ROOT / "scripts/video/assets/gen/cargo-ship-newspaper-v1.png").convert("RGBA")
+    operator=Image.open(ROOT / "scripts/video/assets/gen/ai-duty-officer-collage-v1.png").convert("RGBA")
     radar_art=Image.open(ROOT / "scripts/video/assets/gen/marine-radar-newspaper-v1.png").convert("RGBA")
     sonar_art=Image.open(ROOT / "scripts/video/assets/gen/sonar-hydrophone-newspaper-v1.png").convert("RGBA")
     if args.mode in ("stills","intro-stills"):
         intro=args.mode=="intro-stills";outdir=args.output or ROOT / "runs/delivery/video" / ("shipmind-collage-v5-intro-stills" if intro else "shipmind-collage-v5-stills");outdir.mkdir(parents=True,exist_ok=True)
         times=(.7,1.8,3.3,5.2) if intro else (1.8,8.5,20.0,34.0,49.0,56.0)
         for i,t in enumerate(times):
-            frame=render(t,bg,desktop,product,ship,radar_art,sonar_art,cfg["scenes"]);frame.save(outdir/f"{i+1:02d}-{t:04.1f}s.jpg",quality=94)
+            frame=render(t,bg,desktop,product,ship,operator,radar_art,sonar_art,cfg["scenes"]);frame.save(outdir/f"{i+1:02d}-{t:04.1f}s.jpg",quality=94)
         print(outdir);return
     duration = 7 if args.mode=="transition-preview" else 6 if args.mode=="intro-preview" else 12 if args.mode == "preview" else cfg["duration_s"]
     default_name="shipmind-collage-v10-transition-preview.mp4" if args.mode=="transition-preview" else "shipmind-collage-v5-intro-preview.mp4" if args.mode=="intro-preview" else "shipmind-collage-preview-v10.mp4" if args.mode=="preview" else "shipmind-promo-v10-silent.mp4"
@@ -615,7 +610,7 @@ def main():
             else: source_t = t if args.mode=="intro-preview" else t * (cfg["duration_s"] / duration)
             tick = math.floor(source_t * cfg["visual_tick_fps"]) / cfg["visual_tick_fps"]
             if tick != last_tick:
-                encoded = np.asarray(render(tick, bg, desktop, product, ship, radar_art, sonar_art, cfg["scenes"]))[:, :, ::-1]
+                encoded = np.asarray(render(tick, bg, desktop, product, ship, operator, radar_art, sonar_art, cfg["scenes"]))[:, :, ::-1]
                 last_tick = tick
             writer.write(encoded)
     finally:

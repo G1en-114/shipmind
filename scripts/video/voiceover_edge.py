@@ -12,7 +12,7 @@ LINES=(
  'It unites acoustics, gauges, radar, sonar, and route movement into one clear, evidence-backed picture.',
  'The engineer asks, how are things now? In seconds, the local A I traces the change, cites the signals, and shows what to inspect next.',
  'Agent Skills, Deep Stream, Step Fun, Kwen, and V L L M turn Spark into a complete, reproducible workflow.',
- 'From scattered signals to confident action—intelligence stays on board. Ship Mind.',
+ 'Safer ships. Clearer decisions. Ship Mind.',
 )
 
 async def main():

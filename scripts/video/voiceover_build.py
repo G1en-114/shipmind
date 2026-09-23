@@ -6,7 +6,7 @@ from pathlib import Path
 import imageio_ffmpeg
 import numpy as np
 
-SR=48000;WINDOWS=((.15,5.72),(6.08,16.72),(17.08,27.72),(28.08,43.72),(44.08,53.72),(54.08,59.15))
+SR=48000;WINDOWS=((.15,5.72),(6.08,16.72),(17.08,27.72),(28.08,43.72),(44.08,53.72),(54.08,59.92))
 
 def wav_read(path:Path):
     with wave.open(str(path),'rb') as w:

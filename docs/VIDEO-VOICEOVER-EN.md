@@ -1,33 +1,33 @@
 # ShipMind 60-second English voice-over
 
-This script matches the six burned-in English subtitle cards in the v9 promo. Target delivery: a mature male broadcast voice with calm authority and restrained urgency, approximately 97 words per minute. Leave the marked pauses open so the paper, radar, sonar and impact effects can breathe.
+This script matches the six burned-in English subtitle cards in the v10 promo. Target delivery: a mature male broadcast voice with calm authority and restrained urgency. All six passages use one base synthesis rate; only small 1.01–1.10× timing corrections keep scene boundaries clean.
 
 The generated delivery uses `en-US-ChristopherNeural` as its source voice, then applies slower pacing, lower pitch, broadcast EQ, compression and loudness normalization. It follows the supplied sample's broad performance direction; it is not an exact clone of the sample speaker.
 
 ## Clean recording copy
 
-At three a.m., mid-ocean, one engineer may be watching an entire ship.
+At three a.m., an unfamiliar vibration breaks a ship's steady rhythm.
 
-NVIDIA DGX Spark is the local compute behind ShipMind, powered by the GB10 Grace Blackwell Superchip and unified memory.
+With NVIDIA DGX Spark onboard, ShipMind brings powerful local AI to the watch—compact, responsive, and ready beyond the network.
 
-It combines acoustic changes, gauge readings, radar detections, sonar evidence, and route deviation into one evidence-bound briefing.
+It unites acoustics, gauges, radar, sonar, and route movement into one clear, evidence-backed picture.
 
-Ask how things are now. The local Qwen model, served by vLLM on Spark, answers with evidence and keeps the human in review.
+The engineer asks, “How are things now?” In seconds, the local AI traces the change, cites the signals, and shows what to inspect next.
 
-DGX Spark, NVIDIA Agent Skills, DeepStream, StepFun, Qwen, and vLLM form one reproducible agent workload.
+Agent Skills, DeepStream, StepFun, Qwen, and vLLM turn Spark into a complete, reproducible workflow.
 
-Synthetic inputs. Real Spark compute. Intelligence stays on board. ShipMind.
+Safer ships. Clearer decisions. ShipMind.
 
 ## Timed performance copy
 
 | Time | Delivery | Exact line |
 |---|---|---|
-| 00:00–00:06 | Low and contained. Stress **three a.m.** and **entire ship**. | At **three a.m.**, mid-ocean, / one engineer may be watching an **entire ship**. |
-| 00:06–00:17 | Open up on the product name. Brief pause after ShipMind. | **NVIDIA DGX Spark** is the local compute behind **ShipMind**. / Powered by the **GB10 Grace Blackwell Superchip** / and unified memory. |
-| 00:17–00:28 | Build rhythm through the evidence list; land firmly on briefing. | It combines **acoustic changes**, / **gauge readings**, / **radar detections**, / **sonar evidence**, / and **route deviation** / into one evidence-bound **briefing**. |
-| 00:28–00:44 | Ask the first sentence naturally, then answer with confidence. | Ask: **how are things now?** / The local **Qwen** model, served by **vLLM on Spark**, / answers with evidence / and keeps the **human in review**. |
-| 00:44–00:54 | Crisp product roll-call; do not rush the final claim. | **DGX Spark**, / **NVIDIA Agent Skills**, / **DeepStream**, / **StepFun**, / **Qwen**, and **vLLM** / form one reproducible agent workload. |
-| 00:54–01:00 | Short declarative hits. Half-beat pause between sentences. | **Synthetic inputs.** / **Real Spark compute.** / Intelligence stays **on board**. / **ShipMind.** |
+| 00:00–00:06 | Quiet tension; land on **steady rhythm**. | At **three a.m.**, / an unfamiliar vibration breaks a ship's **steady rhythm**. |
+| 00:06–00:17 | Open up on the product name and three benefits. | With **NVIDIA DGX Spark onboard**, / ShipMind brings powerful local AI to the watch— / **compact, responsive**, and ready **beyond the network**. |
+| 00:17–00:28 | Build cleanly through the sensor list; land on one picture. | It unites **acoustics, gauges, radar, sonar**, / and route movement / into one clear, **evidence-backed picture**. |
+| 00:28–00:44 | Ask naturally; answer with growing confidence. | The engineer asks, **“How are things now?”** / In seconds, the local AI traces the change, / cites the signals, / and shows what to inspect next. |
+| 00:44–00:54 | Crisp platform roll-call; finish on workflow. | **Agent Skills, DeepStream, StepFun, Qwen**, and **vLLM** / turn Spark into a complete, reproducible **workflow**. |
+| 00:54–01:00 | Deliver as three confident beats and a brand sign-off. | **Safer ships.** / **Clearer decisions.** / **ShipMind.** |
 
 The slash `/` marks a short pause and should not be spoken.
 
