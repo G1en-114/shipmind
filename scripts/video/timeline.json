@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "duration_s": 60,
+  "fps": 30,
+  "visual_tick_fps": 12,
+  "scenes": [
+    {"start": 0, "end": 6, "id": "watch", "title": "03:00 · MID-OCEAN", "line": "One watch. Too many signals.", "voiceover": "At three a.m., an unfamiliar vibration breaks a ship's steady rhythm."},
+    {"start": 6, "end": 17, "id": "spark", "title": "NVIDIA DGX SPARK", "line": "The local compute behind ShipMind.", "voiceover": "With NVIDIA DGX Spark onboard, ShipMind brings powerful local AI to the watch—compact, responsive, and ready beyond the network."},
+    {"start": 17, "end": 28, "id": "evidence", "title": "FOUR STREAMS · ONE BRIEFING", "line": "Acoustics · Gauge · Radar · Route", "voiceover": "It unites acoustics, gauges, radar, sonar, and route movement into one clear, evidence-backed picture."},
+    {"start": 28, "end": 44, "id": "console", "title": "ASK: HOW ARE THINGS NOW?", "line": "Qwen3-4B-FP8 answers on DGX Spark in ~3s.", "voiceover": "The engineer asks, “How are things now?” In seconds, the local AI traces the change, cites the signals, and shows what to inspect next."},
+    {"start": 44, "end": 54, "id": "platform", "title": "THE PLATFORM STACK", "line": "Six products · one working path", "voiceover": "Agent Skills, DeepStream, StepFun, Qwen, and vLLM turn Spark into a complete, reproducible workflow."},
+    {"start": 54, "end": 60, "id": "end", "title": "INTELLIGENCE STAYS ON BOARD", "line": "ShipMind · Team Devx", "voiceover": "From scattered signals to confident action—intelligence stays on board. ShipMind."}
+  ]
+}

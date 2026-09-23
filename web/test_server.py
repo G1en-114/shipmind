@@ -1,7 +1,9 @@
 """Local UI adapter regression tests; no model endpoint or node connection."""
 import json
 import subprocess
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from fastapi import HTTPException
@@ -17,6 +19,8 @@ class DashboardTests(unittest.TestCase):
                 self.assertEqual(client.get(path).status_code, 200)
             self.assertEqual(client.get("/api/manual", params={"q": "x" * 201}).status_code, 422)
             self.assertEqual(client.get("/api/manual", params={"q": ""}).status_code, 422)
+            self.assertEqual(client.post("/api/ai/ask", json={"question": ""}).status_code, 422)
+            self.assertEqual(client.post("/api/ai/log-config", json={"max_mb": 0}).status_code, 422)
 
     @patch("subprocess.run")
     def test_unicode_alarm_output_is_accepted(self, run):
@@ -57,6 +61,20 @@ class DashboardTests(unittest.TestCase):
         with TestClient(server.app) as client:
             self.assertEqual(client.get("/api/manual", params={"q": query}).json(), {"answers": []})
         self.assertIn(query, output.call_args.args[1])
+
+    def test_ai_log_rotates_and_keeps_recent_entries(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with patch.object(server, "AI_LOG_DIR", root), \
+                 patch.object(server, "AI_LOG_PATH", root / "duty.jsonl"), \
+                 patch.object(server, "AI_LOG_CONFIG", root / "config.json"), \
+                 patch.object(server, "_AI_LOG_MAX_BYTES", 260):
+                server._append_ai_log("system", "甲" * 70)
+                server._append_ai_log("ai", "乙" * 70)
+                state = server.ai_log_state(10)
+                self.assertTrue((root / "duty.jsonl.1").exists())
+                self.assertEqual(state["entries"][-1]["kind"], "ai")
+                self.assertLessEqual(len(state["entries"]), 2)
 
 
 if __name__ == "__main__":

@@ -38,6 +38,8 @@ python scripts/node_deploy.py                       # 整仓同步（tar+SFTP，
 
 **演示值班台**：SSH 时加转发 `ssh -p 6065 -L 8888:localhost:8888 Developer@106.13.186.155`，本地浏览器开 http://localhost:8888/ 。
 
+AI 值班操作台日志写入 `~/shipmind/runs/ai-duty/duty.jsonl`。默认单文件 2 MiB，超过后保留 3 个轮转归档；可在页面选择 1、2、5、10 或 20 MB。不要把该目录加入部署包，`node_deploy.py` 会保留节点已有日志与设置。
+
 ## 3. 红线（节点手册明文，违反会被回收节点/取消资格）
 
 1. **禁止 `reboot` / `shutdown` / `poweroff`**——远程托管，重启后只能等现场人工恢复。
