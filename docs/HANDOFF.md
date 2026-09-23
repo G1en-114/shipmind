@@ -145,7 +145,7 @@ python scripts/node_deploy.py                                  # 整仓同步（
 bash scripts/smoke.sh
 ```
 
-**文档导航**：`README.md`（项目说明/技术栈/部署）→ `docs/PROJECT-PLAN.md`（方案 v1.2 权威）→ `docs/MASTER-CHECKLIST.md`（总控清单）→ `docs/NODE-DEPLOY.md`（节点部署）→ `evals/BENCHMARK.md`（双轨数据）→ `docs/DEVLOG.md`（开发日志/征文素材）→ `docs/REFERENCES.md`（调研参考）→ `docs/NODE-INCIDENT.md`（OOM 事故记录）。
+**文档导航**：`README.md`（项目说明/技术栈/部署）→ `docs/PROJECT-PLAN.md`（方案 v1.2 权威）→ `docs/MASTER-CHECKLIST.md`（总控清单）→ **`docs/NODE-GUIDE.md`（GB10 节点使用指南——接手必读）** → `docs/NODE-DEPLOY.md`（部署清单）→ `evals/BENCHMARK.md`（双轨数据）→ `docs/DEVLOG.md`（开发日志/征文素材）→ `docs/REFERENCES.md`（调研参考）→ `docs/NODE-INCIDENT.md`（OOM 事故记录）→ `docs/FRONTEND-DELIVERY.md` / `docs/SIMULATION-RUN.md`（前端交付与仿真说明）。
 
 ---
 
