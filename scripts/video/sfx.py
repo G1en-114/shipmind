@@ -20,10 +20,14 @@ def impact(power=1.0,d=.82):
     body=(np.sin(2*np.pi*(44*t+20*t*t))+0.48*np.sin(2*np.pi*83*t))*env
     crack=smooth(noise(n),5)*np.exp(-t*28);return power*(.72*body+.28*crack)
 
-def whoosh(d=.62):
-    n=round(SR*d);t=np.arange(n)/SR;env=np.sin(np.pi*np.clip(t/d,0,1))**1.7
-    air=noise(n)-smooth(noise(n),90);sweep=np.sin(2*np.pi*(130*t+780*t*t))*env
-    return (.22*air+.16*sweep)*env
+def soft_page_turn(d=.76):
+    """A low, papery breath with no bright tonal sweep or trailer-style hit."""
+    n=round(SR*d);t=np.arange(n)/SR;raw=noise(n)
+    env=np.sin(np.pi*np.clip(t/d,0,1))**1.85
+    air=smooth(raw,150)-smooth(raw,950)
+    fibre=raw-smooth(raw,18)
+    felt=np.sin(2*np.pi*82*t)*np.exp(-t*8.5)
+    return (.30*air+.018*fibre+.020*felt)*env
 
 def paper(d=.58):
     n=round(SR*d);t=np.arange(n)/SR;raw=noise(n);fib=raw-smooth(raw,22)
@@ -42,9 +46,9 @@ mix[:,0]+=bed;mix[:,1]+=np.roll(bed,120)
 
 major=(6,17,28,44,54)
 for i,c in enumerate(major):
-    add(whoosh(.7),c-.42,.8,(-.45,.35,-.25,.45,0)[i]);add(impact(1.0 if c in (6,54) else .78),c,.78)
-for c in (5.62,43.58):add(paper(.72),c,.82,pan=-.2 if c<10 else .2)
-for c,f in ((17.2,510),(23.25,760),(28.12,1050),(54.25,620)):add(ping(f),c,.72)
+    add(soft_page_turn(.76),c-.38,.18,(-.22,.18,-.14,.2,0)[i])
+for c in (5.62,43.58):add(paper(.72),c,.16,pan=-.12 if c<10 else .12)
+for c,f,level in ((17.2,510,.18),(23.25,760,.35),(28.12,1050,.16),(54.25,620,.18)):add(ping(f),c,level)
 for c in (4.25,15.2,26.1,40.9,52.1,57.5):add(impact(.48,.52),c,.64)
 
 # Console section: restrained mechanical typing, not a voice substitute.
