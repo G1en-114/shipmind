@@ -2,6 +2,8 @@
 name: engine-room-visual-inspector
 description: 机舱视觉巡检。当需要从视频/图片中识别仪表读数与设备状态（压力表、温度表、液位计、运行指示灯）并与声学证据交叉确认时使用。触发词：仪表、读数、视频巡检、看一眼、设备状态、表盘、压力表、看一眼现场。不适用于：纯音频任务（用 engine-room-acoustic-sentinel）、无图像输入的任务。
 version: 0.1.0
+triggers: 仪表,读数,表盘,压力表,视频巡检,设备状态,看一眼,带框截图
+negative-triggers: 音频分析,声纹,雷达检测,手册查询,日志生成
 entry: scripts/visual_inspect.py
 ---
 

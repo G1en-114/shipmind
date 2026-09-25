@@ -2,6 +2,8 @@
 name: sonar-acoustic-fingerprint
 description: 被动声纹监测（民用海事感知）。当需要从水听器音频中提取船舶声纹特征（LOFAR 窄带谱线=螺旋桨叶频谐波、DEMON 包谱=轴频）、判别目标船类并给出证据谱线时使用。触发词：声纹、声呐、水听器、螺旋桨、LOFAR、DEMON、目标船、船型判别。不适用于：机舱设备自身故障检测（用 engine-room-acoustic-sentinel）、雷达目标检测。
 version: 0.1.0
+triggers: 声纹,声呐,水听器,螺旋桨,LOFAR,DEMON,目标船,船型判别
+negative-triggers: 机舱设备故障检测,雷达目标,手册查询,语音转写
 entry: scripts/sonar_fingerprint.py
 ---
 

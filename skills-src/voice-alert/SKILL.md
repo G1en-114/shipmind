@@ -2,6 +2,8 @@
 name: voice-alert
 description: 告警语音播报与语音指令识别。当需要把分级告警/处置步骤转为语音播报（机舱噪音环境），或把船员语音指令转为文字时使用。触发词：播报、语音、念出来、说出来、听一下、语音指令。不适用于：无声任务、文本日志（用 navlog-autofill）。
 version: 0.1.0
+triggers: 播报,语音,念出来,说出来,语音指令,告警播报,播报告警
+negative-triggers: 无声任务,文本日志,证据审核,雷达检测
 entry: scripts/voice.py
 ---
 

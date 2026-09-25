@@ -2,6 +2,8 @@
 name: report-composer
 description: 巡检报告生成。当一轮值守/巡检（声学+视觉+知识+态势）完成、需要汇总多源证据生成结构化报告时使用。触发词：报告、汇总、总结、生成巡检报告、写报告。不适用于：日志填写（用 navlog-autofill）、单条告警播报（用 StepAudio）。
 version: 0.1.0
+triggers: 报告,汇总,总结,生成巡检报告,写报告,结论清单
+negative-triggers: 单条告警播报,语音播报,念出来,说出来,日志填写,证据审核本身
 entry: scripts/compose_report.py
 ---
 

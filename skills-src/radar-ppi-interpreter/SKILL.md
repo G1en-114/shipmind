@@ -2,6 +2,8 @@
 name: radar-ppi-interpreter
 description: 民用雷达 PPI 解读。当需要从雷达平面位置显示（PPI）回波场中检测目标、输出目标方位/距离/相对航向、或评估碰撞趋势（配合 CPA/TCPA）时使用。数据为合成 PPI（数据即仿真）。触发词：雷达、目标、PPI、回波、态势、方位、检测。不适用于：音频任务（用 sonar-acoustic-fingerprint 或 engine-room-acoustic-sentinel）、航线走廊判定本身（用 route-deviation-watch）。
 version: 0.1.0
+triggers: 雷达,目标,PPI,回波,态势,方位,距离,碰撞趋势,检出目标
+negative-triggers: 音频,声纹,水听器,手册查询,仪表读数,日志
 entry: scripts/ppi_detect.py
 ---
 

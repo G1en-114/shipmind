@@ -2,6 +2,8 @@
 name: route-deviation-watch
 description: 航线偏离哨兵。当需要判断本船是否偏离计划航线（waypoint 走廊）、计算横偏距离 XTE、或评估与目标船的最近会遇距离 CPA/TCPA 时使用。触发词：航线、偏航、偏离、XTE、走廊、航路点、会遇、CPA、TCPA、船位。不适用于：机舱音频分析（用 engine-room-acoustic-sentinel）、手册条文查询（用 manual-rag-query）、无 NMEA 输入的任务。
 version: 0.1.0
+triggers: 航线,偏航,偏离,XTE,走廊,航路点,会遇,CPA,TCPA,船位,偏出航线
+negative-triggers: 机舱音频,声纹,雷达目标检测,手册查询,仪表读数
 entry: scripts/route_watch.py
 ---
 

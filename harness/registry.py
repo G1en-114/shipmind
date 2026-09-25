@@ -24,6 +24,7 @@ class SkillEntry:
     triggers: list[str] = field(default_factory=list)
     dir: Path | None = None
     entry: Path | None = None
+    negative: list[str] = field(default_factory=list)  # 负触发词：命中时应避开本 Skill
     origin: str = "self"          # self=自研 / official=NVIDIA 官方
     executable: bool = False      # 官方 Skill 是否有可执行入口
 
@@ -109,12 +110,16 @@ def load_skills(skills_dir: Path | None = None,
             for t in fm.get("triggers", "").replace("，", ",").split(",")
             if t.strip()
         ]
+        negative = [
+            t.strip()
+            for t in fm.get("negative-triggers", "").replace("，", ",").split(",")
+            if t.strip()
+        ]
         skills.append(SkillEntry(
             name=fm.get("name", d.name),
             description=fm.get("description", ""),
-            triggers=triggers,
-            dir=d,
-            entry=entry,
+            triggers=triggers, negative=negative,
+            dir=d, entry=entry,
         ))
     if include_official:
         skills.extend(load_official_skills())

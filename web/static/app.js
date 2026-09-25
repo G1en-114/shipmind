@@ -29,6 +29,41 @@ const LEVEL = EN?{normal:'Normal',watch:'Watch',alarm:'Alarm',critical:'Critical
 const SKILLS = {'engine-room-acoustic-sentinel':'声学异常检测','engine-room-visual-inspector':'视觉巡检','route-deviation-watch':'航线偏离分析','radar-ppi-interpreter':'雷达目标检测','sonar-acoustic-fingerprint':'被动声纹判别','manual-rag-query':'手册检索','navlog-autofill':'值班日志','report-composer':'报告生成','deepstream-generate-pipeline':'DeepStream 管线生成'};
 const PAGES = EN?{overview:['Watch Overview','Engine and navigation status at a glance.'],engine:['Engine Monitoring','Acoustics and gauges.'],situation:['Navigation Situation','Radar, route and acoustic signatures.'],reports:['Logs & Evidence','Execution records and reports.'],manual:['Manual Search','Local retrieval with sources.'],about:['About ShipMind','An on-board watchkeeping copilot.']}:{overview:['值班总览','机舱与航行状态，一眼掌握。'],engine:['机舱监测','声音与仪表。'],situation:['航行态势','雷达、航线与声纹。'],reports:['日志与证据','执行记录与报告。'],manual:['手册检索','带来源的本地检索。'],about:['关于 ShipMind','船端值守智能副驾。']};
 const state = {data:{},errors:{},range:8000,target:0,filter:'all',busy:false,page:'overview',lastRefresh:null};
+
+/* ===== 外观：浅色 / 深色 / 跟随系统（苹果三档式）===== */
+const THEME_KEY = 'shipmind-theme';
+const THEME_ORDER = ['auto', 'light', 'dark'];
+const THEME_META = { auto: { icon: 'auto', label: '跟随系统' }, light: { icon: 'sun', label: '浅色' }, dark: { icon: 'moon', label: '深色' } };
+const themeMode = () => { const v = localStorage.getItem(THEME_KEY); return THEME_ORDER.includes(v) ? v : 'auto'; };
+const systemDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+const effectiveTheme = mode => mode === 'auto' ? (systemDark() ? 'dark' : 'light') : mode;
+function applyTheme(mode) {
+  const root = document.documentElement;
+  const effective = effectiveTheme(mode);
+  root.dataset.theme = effective;
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.content = effective === 'dark' ? '#0b0b0d' : '#f5f5f7';
+  const b = $('theme-toggle');
+  if (b) { b.innerHTML = icon(THEME_META[mode].icon);
+    b.title = '外观：' + THEME_META[mode].label + '（点击切换）';
+    b.setAttribute('aria-label', b.title); }
+  drawAll();
+}
+function cycleTheme() { const next = { auto: 'light', light: 'dark', dark: 'auto' }[themeMode()];
+  localStorage.setItem(THEME_KEY, next); applyTheme(next); }
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (themeMode() === 'auto') applyTheme('auto'); });
+
+/* 画布配色读 CSS 变量——深浅主题切换后重画即自动换色 */
+let C = {};
+function refreshCanvasColors() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = (name, fb) => { const x = cs.getPropertyValue(name).trim(); return x || fb; };
+  C = { grid: v('--c-grid', '#dbe7f4'), gridStrong: v('--c-grid-strong', '#8aa9c7'),
+        tick: v('--c-tick', '#c8d9ea'), text: v('--c-text', '#6e6e73'),
+        textStrong: v('--c-text-strong', '#1d1d1f'), accent: v('--c-accent', '#0071e3'),
+        dash: v('--c-dash', '#80b9ef'), routeGrid: v('--c-route-grid', '#e5e5ea'),
+        fill: v('--c-spectrum-fill', 'rgba(0,113,227,.055)') };
+}
 let timer,liveTimer,liveBusy=false;
 const tape={values:[],current:-28,target:-28,lastPush:0,started:false};
 function routePage(){
@@ -157,21 +192,21 @@ function drawRadar(){
  const c=canvas('radar');if(!c)return;const {ctx,w,h}=c;
  const cx=w/2,cy=h/2+1,R=Math.min(w/2-32,h/2-33);
  $('radar-range').textContent=number(state.range/1000)+' km';
- if(R<20)return;ctx.lineWidth=1;ctx.strokeStyle='#dbe7f4';
+ if(R<20)return;ctx.lineWidth=1;ctx.strokeStyle=C.grid;
  for(let i=1;i<=4;i++){ctx.beginPath();ctx.arc(cx,cy,R*i/4,0,Math.PI*2);ctx.stroke();}
  for(let deg=0;deg<360;deg+=30){const a=(deg-90)*Math.PI/180;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.stroke();}
- for(let deg=0;deg<360;deg+=5){const a=(deg-90)*Math.PI/180;ctx.strokeStyle=deg%30===0?'#8aa9c7':'#c8d9ea';ctx.beginPath();ctx.moveTo(cx+(R+3)*Math.cos(a),cy+(R+3)*Math.sin(a));ctx.lineTo(cx+(R+(deg%30===0?9:6))*Math.cos(a),cy+(R+(deg%30===0?9:6))*Math.sin(a));ctx.stroke();}
- ctx.fillStyle='#6e6e73';ctx.font='10px SFMono-Regular, Consolas, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+ for(let deg=0;deg<360;deg+=5){const a=(deg-90)*Math.PI/180;ctx.strokeStyle=deg%30===0?C.gridStrong:C.tick;ctx.beginPath();ctx.moveTo(cx+(R+3)*Math.cos(a),cy+(R+3)*Math.sin(a));ctx.lineTo(cx+(R+(deg%30===0?9:6))*Math.cos(a),cy+(R+(deg%30===0?9:6))*Math.sin(a));ctx.stroke();}
+ ctx.fillStyle=C.text;ctx.font='10px SFMono-Regular, Consolas, monospace';ctx.textAlign='center';ctx.textBaseline='middle';
  ['000°','090°','180°','270°'].forEach((v,i)=>{const a=(i*90-90)*Math.PI/180;ctx.fillText(v,cx+(R+22)*Math.cos(a),cy+(R+18)*Math.sin(a));});
- ctx.font='8px SFMono-Regular, Consolas, monospace';ctx.fillStyle='#8e8e93';for(let i=1;i<4;i++)ctx.fillText(number(state.range*i/4000,0)+' km',cx+5,cy-R*i/4+8);
+ ctx.font='8px SFMono-Regular, Consolas, monospace';ctx.fillStyle=C.text;for(let i=1;i<4;i++)ctx.fillText(number(state.range*i/4000,0)+' km',cx+5,cy-R*i/4+8);
  const targets=state.data.situation?.radar.targets||[];
  let outside=0;
  targets.forEach((t,i)=>{if(!Number.isFinite(t.bearing_deg)||!Number.isFinite(t.range_m))return;if(t.range_m>state.range){outside++;return;}const a=(t.bearing_deg-90)*Math.PI/180,r=t.range_m/state.range*R,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
- ctx.strokeStyle=i===state.target?'#0071e3':'#ff9f0a';ctx.fillStyle='#ff9f0a';ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();
- if(i===state.target){ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.stroke();ctx.setLineDash([3,4]);ctx.strokeStyle='#80b9ef';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);}
- ctx.fillStyle='#1d1d1f';ctx.font='10px SFMono-Regular, Consolas, monospace';ctx.textAlign=x>cx+R*.6?'right':'left';ctx.fillText('T'+String(i+1).padStart(2,'0'),x+(x>cx+R*.6?-14:14),y-8);
+ ctx.strokeStyle=i===state.target?C.accent:'#ff9f0a';ctx.fillStyle='#ff9f0a';ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();
+ if(i===state.target){ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.stroke();ctx.setLineDash([3,4]);ctx.strokeStyle=C.dash;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);}
+ ctx.fillStyle=C.textStrong;ctx.font='10px SFMono-Regular, Consolas, monospace';ctx.textAlign=x>cx+R*.6?'right':'left';ctx.fillText('T'+String(i+1).padStart(2,'0'),x+(x>cx+R*.6?-14:14),y-8);
  });
- ctx.fillStyle='#0071e3';ctx.beginPath();ctx.moveTo(cx,cy-6);ctx.lineTo(cx+4,cy+5);ctx.lineTo(cx,cy+2);ctx.lineTo(cx-4,cy+5);ctx.closePath();ctx.fill();
+ ctx.fillStyle=C.accent;ctx.beginPath();ctx.moveTo(cx,cy-6);ctx.lineTo(cx+4,cy+5);ctx.lineTo(cx,cy+2);ctx.lineTo(cx-4,cy+5);ctx.closePath();ctx.fill();
  $('out-of-range').textContent=outside?outside+' 个目标超出当前量程':'';
 }
 function drawRoute(){
@@ -179,7 +214,7 @@ function drawRoute(){
  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),minX=Math.min(...xs),minY=Math.min(...ys),dx=Math.max(...xs)-minX||1,dy=Math.max(...ys)-minY||1;
  const pos=p=>[7+(p[0]-minX)/dx*(w-14),h-8-(p[1]-minY)/dy*(h-16)];
  function line(arr,color,dash){ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.setLineDash(dash);ctx.beginPath();arr.forEach((p,i)=>{const [x,y]=pos(p);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
- line(r.waypoints||[],'#8e8e93',[3,3]);line(r.fixes||[],'#0071e3',[]);if(r.fixes?.length){const [x,y]=pos(r.fixes.at(-1));ctx.fillStyle='#0071e3';ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();}
+ line(r.waypoints||[],C.text,[3,3]);line(r.fixes||[],C.accent,[]);if(r.fixes?.length){const [x,y]=pos(r.fixes.at(-1));ctx.fillStyle=C.accent;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();}
 }
 function renderSpectrum(d){
  const f=d.features||{};
@@ -189,11 +224,11 @@ function renderSpectrum(d){
 }
 function drawSpectrum(){
  const c=canvas('spectrum');if(!c||!tape.values.length)return;const {ctx,w,h}=c,a=tape.values,l=40,r=w-12,t=18,b=h-27,min=-31,max=-25;
- ctx.font='9px SFMono-Regular, Consolas, monospace';ctx.textAlign='right';ctx.fillStyle='#6e6e73';ctx.strokeStyle='#e5e5ea';
+ ctx.font='9px SFMono-Regular, Consolas, monospace';ctx.textAlign='right';ctx.fillStyle=C.text;ctx.strokeStyle=C.routeGrid;
  for(let i=0;i<=3;i++){const y=t+(b-t)*i/3;ctx.fillText(String(Math.round(max-(max-min)*i/3)),l-9,y+3);ctx.beginPath();ctx.moveTo(l,y);ctx.lineTo(r,y);ctx.stroke();}
  ctx.textAlign='left';ctx.fillText('dB',5,10);
  ['−10s','−5s',(EN?'NOW':'现在')].forEach((label,i)=>{ctx.textAlign=i===0?'left':i===2?'right':'center';ctx.fillText(label,l+(r-l)*i/2,h-8);});
- ctx.save();ctx.beginPath();ctx.rect(l,t,r-l,b-t);ctx.clip();ctx.strokeStyle='#0071e3';ctx.lineWidth=1.6;ctx.beginPath();a.forEach((v,i)=>{const x=l+i/(a.length-1)*(r-l),y=b-(v-min)/(max-min)*(b-t);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.lineTo(r,b);ctx.lineTo(l,b);ctx.closePath();ctx.fillStyle='rgba(0,113,227,.055)';ctx.fill();ctx.restore();
+ ctx.save();ctx.beginPath();ctx.rect(l,t,r-l,b-t);ctx.clip();ctx.strokeStyle=C.accent;ctx.lineWidth=1.6;ctx.beginPath();a.forEach((v,i)=>{const x=l+i/(a.length-1)*(r-l),y=b-(v-min)/(max-min)*(b-t);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.lineTo(r,b);ctx.lineTo(l,b);ctx.closePath();ctx.fillStyle=C.fill;ctx.fill();ctx.restore();
 }
 function animateTape(ts){
  const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -265,7 +300,11 @@ async function searchManual(e){
 }
 $('manual-form').addEventListener('submit',searchManual);
 $$('[data-query]').forEach(b=>b.addEventListener('click',()=>{$('manual-query').value=b.dataset.query;searchManual();}));
-function drawAll(){drawRadar();drawSpectrum();drawRoute();}
+function drawAll(){refreshCanvasColors();drawRadar();drawSpectrum();drawRoute();}
 let resizeFrame;window.addEventListener('resize',()=>{syncMenu();cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(drawAll);});
 function tick(){const d=new Date();$('clock').textContent=d.toLocaleDateString(EN?'en-GB':'zh-CN',{month:'2-digit',day:'2-digit'})+' / '+time(d);}
 tick();setInterval(tick,1000);routePage();refresh();
+const urlTheme = new URLSearchParams(location.search).get('theme');
+if (THEME_ORDER.includes(urlTheme)) localStorage.setItem(THEME_KEY, urlTheme);
+applyTheme(themeMode());
+$('theme-toggle').addEventListener('click', cycleTheme);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f5f7"><title>ShipMind 智舷 · 船端值班台</title><link rel="stylesheet" href="/static/app.css"><script src="/static/app.js" defer></script></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f5f7"><script>(()=>{try{const q=new URLSearchParams(location.search).get('theme'),saved=q||localStorage.getItem('shipmind-theme')||'auto',dark=saved==='dark'||(saved==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.querySelector('meta[name="theme-color"]').content=dark?'#0b0b0d':'#f5f5f7'}catch(_){}})()</script><title>ShipMind 智舷 · 船端值班台</title><link rel="stylesheet" href="/static/app.css"><script src="/static/app.js" defer></script></head>
 <body><a class="skip" href="#main">跳转到主要内容</a>
 <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
@@ -15,13 +15,16 @@
 <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
 <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.3 11.3 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.3-11.3 1.4-1.4"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5"/></symbol>
+<symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M12 3a9 9 0 0 1 0 18"/></symbol>
 <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M10 10h4v4h-4zM9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/></symbol>
 </defs></svg>
 <div class="shell"><aside class="sidebar" id="sidebar">
 <a class="brand" href="#overview" aria-label="ShipMind 总览"><svg class="brandmark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 34 11v17l-14 9L6 28V11zM13 24V14l7 5 7-5v10M13 24l7 5 7-5"/></svg><span>ShipMind<small>智舷</small></span></a>
 <nav aria-label="主导航"><a href="#overview" data-view="overview"><svg><use href="#i-grid"/></svg>值班总览</a><a href="#engine" data-view="engine"><svg><use href="#i-wave"/></svg>机舱监测</a><a href="#situation" data-view="situation"><svg><use href="#i-radar"/></svg>航行态势</a><a href="#reports" data-view="reports"><svg><use href="#i-file"/></svg>日志与证据</a><div class="nav-divider"></div><a href="#manual" data-view="manual"><svg><use href="#i-book"/></svg>手册检索</a><a href="#about" data-view="about"><svg><use href="#i-info"/></svg>认识 ShipMind</a></nav>
 <div class="sidebar-bottom"><div class="device-label"><svg><use href="#i-cpu"/></svg><span>本地运行<small>DGX Spark 目标平台</small></span></div><div class="side-foot"><span>Devx</span><span>演示原型</span></div></div></aside>
-<div class="workspace"><header class="topbar"><div class="top-left"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="展开导航" aria-expanded="false"><svg><use href="#i-menu"/></svg></button><span id="breadcrumb">值班总览</span></div><div class="top-right"><span class="connection" id="connection"><span class="dot"></span>连接中</span><time id="clock" class="clock"></time></div></header>
+<div class="workspace"><header class="topbar"><div class="top-left"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="展开导航" aria-expanded="false"><svg><use href="#i-menu"/></svg></button><span id="breadcrumb">值班总览</span></div><div class="top-right"><button class="icon-btn" id="theme-toggle" type="button" aria-label="切换外观"></button><span class="connection" id="connection"><span class="dot"></span>连接中</span><time id="clock" class="clock"></time></div></header>
 <main id="main" tabindex="-1"><div class="page-heading"><div><h1 id="page-title">值班总览</h1><p id="page-subtitle">从机舱到驾驶台，让每一条观测都有迹可循。</p></div><div class="page-actions"><label class="auto-label"><input type="checkbox" id="auto-refresh" checked>自动刷新</label><button class="button primary" id="refresh"><svg><use href="#i-refresh"/></svg><span>刷新观测</span></button></div></div>
 <div class="snapshot-bar" id="snapshot-bar"><span><span class="status-square"></span>合成演示</span><span>更新 <time id="updated">—</time></span></div><div id="refresh-status" role="status" class="sr-only"></div>
 <div class="dashboard">

@@ -2,6 +2,8 @@
 name: manual-rag-query
 description: 本地知识库检索。当需要查询设备手册、COLREGs 避碰规则、公司 SMS 体系文件的条款原文并带引用回答时使用。触发词：手册、规则、条款、查一下、COLREGs、SMS、会遇、追越、直航、交叉、轴承、气蚀、换泵。不适用于：仪表读数（用 engine-room-visual-inspector）、音频分析（用 engine-room-acoustic-sentinel / sonar-acoustic-fingerprint）。
 version: 0.1.0
+triggers: 手册,规则,条款,查一下,COLREGs,SMS,会遇,追越,直航,交叉,轴承磨损原因,气蚀
+negative-triggers: 实时检测,音频分析,仪表读数,雷达目标,语音播报
 entry: scripts/rag_query.py
 ---
 

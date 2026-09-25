@@ -18,6 +18,9 @@ def route(query: str, skills: list[SkillEntry]) -> SkillEntry | None:
         trig = {k.lower() for k in s.triggers}
         extra = {k for k in s.keywords() if k not in trig}
         score = sum(2 for kw in trig if kw in q) + sum(1 for kw in extra if kw in q)
+        # 负触发扣分：命中负触发词 2 分——语义冲突时宁可少分也不误触发
+        neg = {k.lower() for k in getattr(s, "negative", [])}
+        score -= sum(2 for kw in neg if kw in q)
         if score > best_score:
             best, best_score = s, score
     return best

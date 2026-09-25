@@ -154,6 +154,16 @@ v10 最终交付（当前推荐版本）：
 
 v10 完整成片已验收为 1800 帧、1920×1080、30 fps、60.0 秒；音轨为 48 kHz 双声道 AAC。文件大小 107,546,544 字节，SHA-256 为 `C1ECEE0986C68DFA3D3EB286CAC3DCC0180D9C6BEDDEBE6A83AAB044B2253A20`。
 
+v11 音效修订版（当前推荐版本）：
+
+- 完整成片：`runs/delivery/video/shipmind-promo-v11-voiced.mp4`
+- 柔和普通音效轨：`runs/delivery/video/shipmind-promo-v11-soft-sfx.wav`
+- 男声与柔和音效混音：`runs/delivery/video/shipmind-promo-v11-voice-soft-sfx.wav`
+
+v11 保留 v10 全部画面和旁白，只重做五处转场声音：移除高频音高扫频与预告片式冲击，改成低通空气声、轻纸张翻动和极弱毛毡低频。五处转场的平均音效 RMS 从约 -16.3 dBFS 降至 -26.1 dBFS，下降约 9.8 dB。成片 SHA-256 为 `FF5D277ED0C74B6CDB0E551AC546F8B74FF97CB9D435671414104801448BBB0F`。
+
+v12 静音效版（当前推荐版本）：`runs/delivery/video/shipmind-promo-v12-quiet.mp4`。在 v11 的柔和音色基础上，将整条普通音效再降低约 18.4 dB，使其只作为极轻的背景触感；旁白响度保持不变。独立混音为 `runs/delivery/video/shipmind-promo-v12-quiet-mix.wav`，成片 SHA-256 为 `C53A6C2DDCAF236A202BE11C8ACCF39E3321EB8BABFB2DDCB76E248DB4C63DCA`。
+
 生成压缩样片：
 
 ```powershell

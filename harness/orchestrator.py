@@ -44,7 +44,11 @@ class Orchestrator:
         """大脑优先路由，关键词路由兜底。返回 (skill名或None, 路由方式)。"""
         from .brain import choose_skill
         try:
-            ready = [s for s in self.skills.values() if s.entry]
+            # 候选 = 自研可执行 + 全部官方（official-bridge 是内部分发器，排除）
+            ready = [s for s in self.skills.values()
+                     if s.name != "official-bridge"
+                     and ((s.entry and s.origin == "self")
+                          or s.origin == "official")]
             name = choose_skill(query, ready)
             if name is None:
                 return None, "brain"

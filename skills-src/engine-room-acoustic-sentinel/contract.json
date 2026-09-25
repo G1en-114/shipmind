@@ -1,0 +1,4 @@
+{
+  "required": ["level", "evidence"],
+  "types": {"level": "string", "evidence": "array"}
+}

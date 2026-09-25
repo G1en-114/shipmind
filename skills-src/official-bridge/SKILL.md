@@ -2,6 +2,8 @@
 name: official-bridge
 description: 官方 NVIDIA Skill 桥接层。当需要调用官方 Skill（DeepStream 管线生成 / RAG Blueprint / TAO grounding / VSS 视频问答与报告）时使用。触发词：官方skill、deepstream、管线、gst-launch、rag-blueprint、tao、grounding、vss、视频报告。不适用于：自研 Skill 的功能调用。
 version: 0.1.0
+triggers: 官方skill,deepstream,管线,gst-launch,rag-blueprint,tao,grounding,vss
+negative-triggers: 自研Skill功能调用,机舱检测,声纹分析
 entry: ../../scripts/official_bridge.py
 ---
 

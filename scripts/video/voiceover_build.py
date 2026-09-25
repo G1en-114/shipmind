@@ -27,7 +27,7 @@ def atempo_chain(value:float):
     while value>2:vals.append(2.0);value/=2
     vals.append(value);return ','.join(f'atempo={v:.8f}' for v in vals)
 
-ap=argparse.ArgumentParser();ap.add_argument('--raw-dir',type=Path,default=Path('runs/delivery/video/voice_raw'));ap.add_argument('--sfx',type=Path,default=Path('runs/delivery/video/shipmind-promo-v8-sfx.wav'));ap.add_argument('--voice',type=Path,default=Path('runs/delivery/video/shipmind-voiceover-v10.wav'));ap.add_argument('--mix',type=Path,default=Path('runs/delivery/video/shipmind-promo-v10-voice-sfx.wav'));args=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--raw-dir',type=Path,default=Path('runs/delivery/video/voice_raw'));ap.add_argument('--sfx',type=Path,default=Path('runs/delivery/video/shipmind-promo-v8-sfx.wav'));ap.add_argument('--voice',type=Path,default=Path('runs/delivery/video/shipmind-voiceover-v10.wav'));ap.add_argument('--mix',type=Path,default=Path('runs/delivery/video/shipmind-promo-v10-voice-sfx.wav'));ap.add_argument('--sfx-gain',type=float,default=.12,help='Linear effects gain before voice ducking; 0.12 is about -18.4 dB.');args=ap.parse_args()
 ffmpeg=imageio_ffmpeg.get_ffmpeg_exe();work=args.raw_dir/'processed';work.mkdir(parents=True,exist_ok=True)
 voice=np.zeros(round(SR*60),dtype=np.float64)
 for i,(start,end) in enumerate(WINDOWS,1):
@@ -46,5 +46,5 @@ with wave.open(str(args.sfx),'rb') as w:
     if w.getframerate()!=SR or w.getnchannels()!=2 or w.getsampwidth()!=2:raise ValueError('effects bed must be 48 kHz stereo PCM16')
     sfx=np.frombuffer(w.readframes(w.getnframes()),dtype='<i2').astype(np.float64).reshape(-1,2)/32768
 env=np.abs(voice);kernel=np.ones(round(.12*SR))/round(.12*SR);env=np.convolve(env,kernel,mode='same');duck=1-.62*np.clip(env/.035,0,1)
-mix=sfx*duck[:,None]+voice[:,None]*.92;mix=np.tanh(mix*1.08);mix*=.94/max(np.max(np.abs(mix)),1e-9);wav_write(args.mix,mix,2)
+mix=sfx*duck[:,None]*args.sfx_gain+voice[:,None]*.92;mix=np.tanh(mix*1.08);mix*=.94/max(np.max(np.abs(mix)),1e-9);wav_write(args.mix,mix,2)
 print(args.voice);print(args.mix)

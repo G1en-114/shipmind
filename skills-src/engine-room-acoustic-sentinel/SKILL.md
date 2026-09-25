@@ -2,6 +2,8 @@
 name: engine-room-acoustic-sentinel
 description: 机舱声学异常检测。当需要分析机舱或旋转设备（主机、辅机、泵、轴承、风机）的运行音频、判断异响或故障征兆时使用。触发词：异响、噪音异常、声学检测、轴承、泵阀、机舱告警音频。不适用于：语音转写（用 StepAudio Skills）、无音频输入的任务、音乐或通用音频分类。
 version: 0.1.0
+triggers: 异响,噪音异常,声学检测,轴承,泵阀,机舱告警,声音不对,金属摩擦,判断一下声音
+negative-triggers: 语音转写,字幕,音乐,雷达,航线,手册查询,仪表读数
 entry: scripts/acoustic_sentinel.py
 ---
 

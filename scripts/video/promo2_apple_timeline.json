@@ -1,0 +1,14 @@
+{
+  "title": "ShipMind — Onboard Intelligence",
+  "duration_s": 42,
+  "fps": 30,
+  "scenes": [
+    {"start": 0, "end": 5, "id": "signal", "title": "船上发生的一切，\n都从信号开始。"},
+    {"start": 5, "end": 11, "id": "spark", "title": "一台设备。\n守住一条航线。"},
+    {"start": 11, "end": 18, "id": "overview", "title": "每一种观测，\n汇成一张清晰值班图。"},
+    {"start": 18, "end": 25, "id": "signals", "title": "声学。表盘。雷达。航线。", "line": "同步被看见。"},
+    {"start": 25, "end": 32, "id": "ask", "title": "直接问：现在怎么样？", "line": "本地 AI 引用证据，给出检查建议。"},
+    {"start": 32, "end": 38, "id": "local", "title": "计算留在船上。", "line": "关键判断，交给人。"},
+    {"start": 38, "end": 42, "id": "close", "title": "ShipMind", "line": "让信号被看见。让判断更从容。"}
+  ]
+}

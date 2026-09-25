@@ -79,6 +79,10 @@ def main() -> int:
     ap.add_argument("--asr", dest="asr_file", help="待识别音频")
     args = ap.parse_args()
     try:
+        if args.tts is not None and not args.tts.strip():
+            print(json.dumps({"ok": False, "error": "播报文本为空，拒绝合成"},
+                             ensure_ascii=False), file=sys.stderr)
+            return 2
         if args.tts:
             print(json.dumps(tts(args.tts, Path(args.out)), ensure_ascii=False))
             print(f"MEDIA:{Path(args.out).resolve()}")

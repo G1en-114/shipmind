@@ -2,6 +2,8 @@
 name: navlog-autofill
 description: 航海/轮机日志自动生成。当需要把一轮值守的事件流（告警、处置动作、态势发现）整理成标准班志文本与统计时使用。触发词：日志、轮机日志、航海日志、班志、记录、填写日志。不适用于：巡检报告（用 report-composer）、实时播报（用 StepAudio）。
 version: 0.1.0
+triggers: 日志,轮机日志,航海日志,班志,填写日志,记录整理
+negative-triggers: 报告生成,语音播报,实时告警,证据审核
 entry: scripts/navlog.py
 ---
 

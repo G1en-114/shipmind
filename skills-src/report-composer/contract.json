@@ -1,0 +1,4 @@
+{
+  "required": ["report_md", "conclusions", "verifier"],
+  "types": {"report_md": "string", "conclusions": "array", "verifier": "object"}
+}

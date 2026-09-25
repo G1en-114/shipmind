@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "duration_s": 72,
+  "fps": 30,
+  "visual_tick_fps": 12,
+  "scenes": [
+    {"start": 0, "end": 7, "id": "incident", "kicker": "AN ONBOARD DECISION STORY", "title": "一次异常，如何成为判断", "voiceover": "凌晨三点，一次陌生振动打破了船舶稳定的节奏。"},
+    {"start": 7, "end": 17, "id": "evidence", "kicker": "ORIGINAL EVIDENCE", "title": "从原始观测开始", "voiceover": "ShipMind 不从结论开始。它先保存声学、表盘、雷达与航线的原始观测。"},
+    {"start": 17, "end": 26, "id": "trace", "kicker": "IDENTIFY · COMPARE · TRACE", "title": "识别、对照、追溯", "voiceover": "每一条异常，都能回到时间、来源和计算过程。"},
+    {"start": 26, "end": 37, "id": "threshold", "kicker": "DECISION SCALE", "title": "逐级比较", "voiceover": "同一事件会在不同阈值下逐级比较。哪里仍是信号，哪里开始值得关注，一目了然。"},
+    {"start": 37, "end": 47, "id": "judgement", "kicker": "NOT ONE ANSWER", "title": "不是一个答案，而是三层判断尺度", "voiceover": "它给出的不是一个武断答案，而是观察、推断与行动三层判断尺度。"},
+    {"start": 47, "end": 58, "id": "workflow", "kicker": "A REPRODUCIBLE WORKFLOW", "title": "一条完整工作路径", "voiceover": "这些判断由 DGX Spark 上的本地模型、Agent Skills、DeepStream、Qwen 与 vLLM 共同完成。"},
+    {"start": 58, "end": 65, "id": "audit", "kicker": "A TRACEABLE PROCESS", "title": "过程留痕，失败可见，人工复核", "voiceover": "过程被记录，失败不会被隐藏，关键变化交给值班人员复核。"},
+    {"start": 65, "end": 72, "id": "principle", "kicker": "HUMAN IN REVIEW", "title": "AI 辅助 ≠ 自动定论", "voiceover": "AI 辅助不等于自动定论。它让分散信号成为可复核的判断，让每一次值守更安全、更从容。ShipMind。"}
+  ]
+}
