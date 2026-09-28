@@ -1,7 +1,7 @@
 # 智舷 ShipMind —— 船舶离线值守多智能体副驾
 
 > NVIDIA DGX Spark Hackathon · Agent Skills 开发挑战赛 参赛项目（队：Devx）
-> 团队 2 人：二进制安全/AI 安全 × 机器学习 ｜ 方案定稿见 `docs/PROJECT-PLAN.md`
+> 团队 **Devx**：蔺浩翔、刘宇轩（太原理工大学人工智能学院）｜ 方案定稿见 `docs/PROJECT-PLAN.md`
 
 ## 一句话
 
